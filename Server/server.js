@@ -10,6 +10,12 @@ app.get('/', (req, res)=>{
     res.send("Hello")
 })
 
-app.listen(3000, ()=>{
-    console.log("Mini Twitter is running at port 3000")
+mongoose.connect('mongodb+srv://zhou:cc12112@cluster0.ebnlf4j.mongodb.net/MiniTwitter?retryWrites=true&w=majority')
+.then(()=>{
+    app.listen(3000, ()=>{
+        console.log("Mini Twitter is running at port 3000")
+    })
+    console.log('connected to MongoDB')
+}).catch((error) => {
+    console.log(error)
 })
