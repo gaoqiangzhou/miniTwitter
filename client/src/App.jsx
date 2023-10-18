@@ -1,11 +1,22 @@
-import { useState } from 'react'
-import './App.css'
+import './App.css';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Post from './pages/Post';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 function App() {
 
   return (
-    <>
-      <div className="text-3xl font-bold underline">Hello world</div>
-    </>
+      <div>
+        <Router>
+          <Routes>
+            <Route exact path="/" element = {<Home/>}/>
+            <Route exact path="/login" element = {<Login/>}/>
+            <Route exact path="/register" element = {<Register/>}/>
+            <Route exact path="/post/:id" element = {<Post/>}/>
+          </Routes>
+        </Router>
+      </div>
   )
 }
 
