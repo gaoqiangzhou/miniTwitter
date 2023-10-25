@@ -2,14 +2,14 @@ const express = require('express')
 const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
-const User = require("./Models/user");
+const userRoute = require("./Routes/user")
+
 
 app.use(cors());
 app.use(express.json());
+app.use("/user", userRoute);
 
-app.get('/', (req, res)=>{
-    res.send("Hello")
-})
+
 
 mongoose.connect('mongodb+srv://zhou:cc12112@cluster0.ebnlf4j.mongodb.net/MiniTwitter?retryWrites=true&w=majority')
 .then(()=>{

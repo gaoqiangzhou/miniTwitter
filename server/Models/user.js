@@ -4,6 +4,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    type: {
+        type: String,
+        require: true,
+        enum: {
+            values: ["SU", "CU", "TU", "OU"],
+            message: "{value} not supproted"
+        }
+    },
     password: {
         type: String,
         require: true
