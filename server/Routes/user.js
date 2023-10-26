@@ -2,26 +2,24 @@ const express = require("express");
 const router = express.Router();
 //user and verification model
 const User = require("../Models/user");
-const UserVerif = require("../Models/userVerification");
 //password handle
 const bcrypt = require("bcrypt");
-//email handler
-const nodemailer = require("nodemailer");
-//unique string
-const {v4: uuidv4} = require("uuid");
+//env variables
+require('dotenv').config()
+//jsonwebtoken
+const jwt = require("jsonwebtoken")
+const createToken = (_id) => {
+    //(payload, secret, options)
+    return jwt.sign({_id}, process.env.ACCESS_TOKEN_SECRET, {});
+}
 
-
-router.get("/", (req, res) => {
-
-});
 //add a new user
 router.post("/register", (req, res) => {
-    let {name, type, email, password} = req.body;
+    let {name, type, password} = req.body;
     name.trim();
-    email.trim();
     password.trim();
 
-    if(name === "" || email ==="" || password ==="")
+    if(name === "" || password ==="")
     {    res.json({
             status: "FAILED",
             message: "Empty input fields"
@@ -30,19 +28,14 @@ router.post("/register", (req, res) => {
             status: "FAILED",
             message: "Invalid name enterd"
         })
-    } else if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
-        res.json({
-            status: "FAILED",
-            message: "Invalid email enterd"
-        })
-    } else if(password.length < 8){
+    }  else if(password.length < 8){
         res.json({
             status: "FAILED",
             message: "password is too short"
         })
     } else {
         //check if account already exists
-        User.find({email}).then(result => {
+        User.find({name}).then(result => {
             if(result.length) {
                 res.json({
                     status: "FAILED",
@@ -57,14 +50,17 @@ router.post("/register", (req, res) => {
                     const newUser = new User({
                         name,
                         type,
-                        email,
                         password: hashedPassword
                     });
                     newUser.save().then(result => {
+                        //once successfully add a user to the database
+                        //create a token
+                        const token = createToken(result._id);
                         res.json({
                             status: "SUCCESS",
                             message: "User registered sucessful",
-                            data: result
+                            data: result,
+                            token: token
                         })
                     }).catch(err => {
                         res.json({
@@ -91,27 +87,29 @@ router.post("/register", (req, res) => {
 });
 //Log in
 router.post("/login", (req, res) => {
-    let {email, password} = req.body;
-    email.trim();
+    let {name, password} = req.body;
+    name.trim();
     password.trim();
-    if(email ==="" || password ==="")
+    if(name ==="" || password ==="")
     {
         res.json({
             status: "FAILED",
             message: "Empty input fields"
         })
     }else{
-        User.find({email}).then(data => {
+        User.find({name}).then(data => {
             if(data){
                 //user exists
                 const hashedPassword = data[0].password;
                 bcrypt.compare(password, hashedPassword).then(result => {
                     if(result){
-                        //password matchys
+                        //password matchs
+                        //create a token for the user
+                        const token = createToken(data._id);
                         res.json({
                             status: "SUCCESS",
                             message: "login success",
-                            data: data
+                            token: token
                         })
                     } else {
                         res.json({
