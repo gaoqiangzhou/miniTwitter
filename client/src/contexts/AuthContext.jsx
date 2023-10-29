@@ -26,7 +26,7 @@ export function AuthContextProvider({children}){
     }
     const logout = () => {
         //remove user from storage
-        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setUser(null);
     }
     const login = (name, password) => {
