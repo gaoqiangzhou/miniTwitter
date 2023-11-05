@@ -2,32 +2,58 @@ const express = require("express");
 const router = express.Router();
 const requireAuth = require("../middleware/requireAuth");
 
-// In-memory storage for posts
-let posts = [];
-
-// Get all posts
-router.get("/posts", (req, res) => {
-  res.json(posts);
-});
+const Post = require("../Models/post");
 
 // Create a new post
-router.post("/posts", (req, res) => {
-  const { username, content } = req.body;
-  if (!username || !content) {
-    return res
-      .status(400)
-      .json({ error: "Username and content are required fields." });
+router.post("/post", (req, res) => {
+  const { content } = req.body;
+
+  if (!content) {
+    res.json({
+      status: "FAILED",
+      message: "Content is required for the post.",
+    });
   }
 
-  const newPost = {
-    id: posts.length + 1,
-    username: username,
+  const newPost = new Post({
     content: content,
-    createdAt: new Date(),
-  };
+    // Include other fields as needed (comments, likes, dislikes, etc.)
+  });
 
-  posts.push(newPost);
-  res.status(201).json(newPost);
+  newPost
+    .save()
+    .then((post) => {
+      res.json({
+        status: "SUCCESS",
+        message: "Post created successfully.",
+        data: post,
+      });
+    })
+    .catch((error) => {
+      res.json({
+        status: "FAILED",
+        message: "Failed to create post.",
+      });
+    });
+});
+
+// Get all posts
+router.get("/post", (req, res) => {
+  Post.find()
+    .then((posts) => {
+      res.json({
+        status: "SUCCESS",
+        message: "Posts retrieved successfully.",
+        data: posts,
+      });
+    })
+    .catch((error) => {
+      res.json({
+        status: "FAILED",
+        message: "Failed to retrieve posts.",
+        error: error.message,
+      });
+    });
 });
 
 module.exports = router;
