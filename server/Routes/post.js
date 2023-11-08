@@ -276,6 +276,4 @@ router.post("/:postId/complain", async (req, res) => {
   }
 });
 
-// Add more routes for tipping, complaining, following, and subscribing as needed
-
 module.exports = router;
