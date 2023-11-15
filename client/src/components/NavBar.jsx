@@ -6,9 +6,9 @@ const NavBar = () => {
   const {user, logout} = useAuth();
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900">
-      <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      <div className="max-w-1280px flex flex-wrap items-center justify-between mx-auto p-4">
         <NavLink to="/" className="flex items-center">
-          <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Mini Twitter</span>
+          <span className="self-center text-3xl font-bold whitespace-nowrap dark:text-white text-[#00df9a]">Mini Twitter</span>
         </NavLink>
 
         <div className="w-full md:block md:w-auto" id="navbar-default">
