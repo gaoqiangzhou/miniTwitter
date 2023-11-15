@@ -8,8 +8,8 @@ const TwitterPostBox = () => {
   const [tweet, setTweet] = useState('');
   const {user} = useAuth();
   const postAPI = "http://localhost:3000/post";
-  const userName = user?.data[0].name;
-  const userId = user?.data[0]._id;
+  const userName = user?.name;
+  const userId = user?._id;
 
   const handleTweetChange = (e) => {
     setTweet(e.target.value);

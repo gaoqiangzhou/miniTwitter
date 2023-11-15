@@ -11,15 +11,22 @@ export function AuthContextProvider({children}){
     const APILOGIN = "http://localhost:3000/user/login";
     const [user, setUser] = useState(null);
     const [isLoading, setIsloading] = useState(null);
-    const signup = (name, password) => {
+    const signup = (name, type, password) => {
         setIsloading(true);
-        axios.post(APISIGNUP, {name: name, type: "OU", password: password})
+        axios.post(APISIGNUP, {name: name, type: type, password: password})
         .then(res => {
             if(res.data.status == "FAILED") throw new Error('sing up failed');
             //save the user into local storage
-            localStorage.setItem('user', JSON.stringify(res.data));
+            const data = res.data;
+            const userInfo = {
+                name: data.data.name,
+                type: data.data.type,
+                _id: data.data._id,
+                token: data.token
+            }
+            localStorage.setItem('user', JSON.stringify(userInfo));
             //update user
-            setUser(res.data);
+            setUser(userInfo);
             setIsloading(false);
         })
         .catch(err => console.log(err))
@@ -35,11 +42,17 @@ export function AuthContextProvider({children}){
         .then(res => {
             if(res.data.status == "FAILED") throw new Error(res.data.message);
             //save the user into local storage
-            localStorage.setItem('user', JSON.stringify(res.data));
+            const data = res.data;
+            const userInfo = {
+                name: data.data[0].name,
+                type: data.data[0].type,
+                _id: data.data[0]._id,
+                token: data.token
+            }
+            localStorage.setItem('user', JSON.stringify(userInfo));
             
             //update user
-            setUser(res.data);
-            console.log(res.data)
+            setUser(userInfo);
             setIsloading(false);
         })
         .catch(err => console.log(err))
