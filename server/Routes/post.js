@@ -6,7 +6,7 @@ const User = require("../Models/user");
 
 // Create a new post
 router.post("/", async (req, res) => {
-  const { content, user: userId } = req.body;
+  const { content, userId, userName } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -18,7 +18,8 @@ router.post("/", async (req, res) => {
 
     const newPost = new Post({
       content,
-      user: userId,
+      userId,
+      userName,
     });
 
     await newPost.save();
@@ -35,6 +36,17 @@ router.post("/", async (req, res) => {
     });
   }
 });
+//get all posts
+router.get("/", async(req, res) =>{
+  Post.find({}).then((posts) => {
+    res.send(posts);
+  }).catch(err => {
+    res.json({
+      status: "FAILED",
+      message: "Failed to get all posts"
+  })
+  })
+})
 
 // Add a comment to a post
 router.post("/:postId/comments", async (req, res) => {
@@ -61,7 +73,7 @@ router.post("/:postId/comments", async (req, res) => {
       content,
     };
 
-    post.commlients.push(newComment);
+    post.comments.push(newComment);
     await post.save();
     res.json({
       status: "SUCCESS",

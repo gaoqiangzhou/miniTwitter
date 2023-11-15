@@ -5,9 +5,14 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  user: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User", // Reference to the User model for the user who posted the message
+    required: true,
+  },
+  userName:
+  {
+    type: String,
     required: true,
   },
   comments: [
@@ -66,19 +71,7 @@ const postSchema = new mongoose.Schema({
         required: true,
       },
     },
-  ],
-  followers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to the User model for the user who is following
-    },
-  ],
-  subscribers: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to the User model for the user who is subscribed
-    },
-  ],
+  ]
 });
 
 const Post = mongoose.model("Post", postSchema);
