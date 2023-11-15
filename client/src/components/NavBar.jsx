@@ -1,36 +1,88 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState } from "react";
+import { AiOutlineBars } from "react-icons/ai";
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext"; // Assuming you have an AuthContext for user authentication
 
 const NavBar = () => {
-  const {user, logout} = useAuth();
-  return (
-    <nav className="bg-white border-gray-200 dark:bg-gray-900">
-      <div className="max-w-1280px flex flex-wrap items-center justify-between mx-auto p-4">
-        <NavLink to="/" className="flex items-center">
-          <span className="self-center text-3xl font-bold whitespace-nowrap dark:text-white text-[#00df9a]">Mini Twitter</span>
-        </NavLink>
+  const { user, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
 
-        <div className="w-full md:block md:w-auto" id="navbar-default">
-          {!user ? 
-            (<ul className = "font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-              <li>
-                <NavLink to="/login" className = "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Login</NavLink>
+  const SmallNav = () => (
+    <div className="md:hidden z-50">
+      <div>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          type="button"
+          className="text-white text-[30px]"
+        >
+          <AiOutlineBars />
+        </button>
+      </div>
+      {isOpen && (
+        <div className="origin-top-right absolute right-0 mt-2 w-auto rounded-md bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <ul className="py-1" role="none">
+            <Link to="/Login">
+              <li
+                onClick={() => setIsOpen(false)}
+                className="ml-3 font-light hover:bg-white hover:text-black py-2 px-4 text-[13px] rounded-full"
+              >
+                Login
               </li>
-              <li>
-                <NavLink to="/register" className = "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Register</NavLink>
+            </Link>
+            <Link to="/Register">
+              <li
+                onClick={() => setIsOpen(false)}
+                className="ml-3 font-light hover:bg-white hover:text-black py-2 px-4 text-[13px] rounded-full"
+              >
+                Register
               </li>
-            </ul>) :
-            (<div>
-              <span className = "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">{user?.data[0].name}</span>
-              <button onClick={logout} className = "block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
-                logout
-              </button>
-            </div>)}
+            </Link>
+          </ul>
         </div>
+      )}
+    </div>
+  );
+
+  return (
+    <nav style={{ zIndex: "101" }} className="fixed w-full top-0 bg-slate-900 ">
+      <div className="flex justify-between items-center px-20 py-4">
+        <Link to="/">
+          <span className="text-white text-[10px] md:text-[15px] font-black flex font-mono">
+            MiniTwitter
+          </span>
+        </Link>
+        <div>
+          {user ? (
+            <div>
+              <span className="text-white text-[13px] mr-4">
+                {user?.data[0].name}
+              </span>
+              <button
+                onClick={logout}
+                className="text-white text-[13px] hover:bg-white hover:text-black py-2 px-4 rounded-full"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <ul className="hidden md:flex text-white">
+              <Link to="/Login">
+                <li className="ml-3 font-light hover:bg-white hover:text-black py-2 px-4 text-[13px] rounded-full">
+                  Login
+                </li>
+              </Link>
+              <Link to="/Register">
+                <li className="ml-3 font-light hover:bg-white hover:text-black py-2 px-4 text-[13px] rounded-full">
+                  Register
+                </li>
+              </Link>
+            </ul>
+          )}
+        </div>
+        <SmallNav />
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;
