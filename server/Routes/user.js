@@ -23,12 +23,12 @@ router.post("/register", (req, res) => {
     {    res.json({
             status: "FAILED",
             message: "Empty input fields"
-    })} else if(!/^[a-zA-Z]*$/.test(name)){
+    })} else if(!/^[a-zA-Z][a-zA-Z0-9]*$/.test(name)){
         res.json({
             status: "FAILED",
             message: "Invalid name enterd"
         })
-    }  else if(password.length < 8){
+    }  else if(password.length < 4){
         res.json({
             status: "FAILED",
             message: "password is too short"
