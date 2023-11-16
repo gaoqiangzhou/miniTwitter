@@ -32,11 +32,45 @@ router.post("/", async (req, res) => {
         } catch (error) {
             res.json({
               status: "FAILED",
-              message: "Error occurred find and update",
+              message: "Error occurred when subscribe",
               error: error.message,
             });
           }
         
+    }
+})
+//unsubscribe
+router.put("/", async (req, res) => {
+    const {followId, followerId} = req.body;
+    if(followId === "" || followerId ===""){
+        res.json({
+            status: "FAILED",
+            message: "invalid Id"
+    })} else
+    {
+        try{
+            //find for follow id
+            let query = { userId: followId };
+            let updateData = { $pull : {follower: followerId}};
+            let options = {returnDocument: 'after' };
+            let doc = await Subscribe.findOneAndUpdate(query, updateData, options);
+            await doc.save();
+            //find for follwer id
+            query = { userId: followerId };
+            updateData = { $pull : {following: followId}};
+            doc = await Subscribe.findOneAndUpdate(query, updateData, options);
+            await doc.save();
+            res.json({
+                status: "SUCCESS",
+                message: "successfully unsubscribe"
+              });
+        } catch (error) {
+            res.json({
+              status: "FAILED",
+              message: "Error occurred when unsubscribe",
+              error: error.message,
+            });
+          }
     }
 })
 module.exports = router;
