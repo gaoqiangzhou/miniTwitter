@@ -9,6 +9,8 @@ export function useAuth(){
 export function AuthContextProvider({children}){
     const APISIGNUP = "http://localhost:3000/user/register";
     const APILOGIN = "http://localhost:3000/user/login";
+    const APIFOLLOWER = "http://localhost:3000/subscribe/follower/";
+    const APIFOLLOWING = "http://localhost:3000/subscribe/following/";
     const [user, setUser] = useState(null);
     const [isLoading, setIsloading] = useState(null);
     const signup = (name, type, password) => {
@@ -22,7 +24,9 @@ export function AuthContextProvider({children}){
                 name: data.data.name,
                 type: data.data.type,
                 _id: data.data._id,
-                token: data.token
+                token: data.token,
+                following: [],
+                follower: []
             }
             localStorage.setItem('user', JSON.stringify(userInfo));
             //update user
@@ -36,30 +40,40 @@ export function AuthContextProvider({children}){
         localStorage.removeItem('user');
         setUser(null);
     }
-    const login = (name, password) => {
+    const login = async (name, password) => {
         setIsloading(true);
-        axios.post(APILOGIN, {name: name, password: password})
-        .then(res => {
+        const res = await axios.post(APILOGIN, {name: name, password: password})
+        try
+        {
             if(res.data.status == "FAILED") throw new Error(res.data.message);
-            //save the user into local storage
             const data = res.data;
+            const id = data.data._id;
+            const following = await axios.get(APIFOLLOWING + id);
+            const follower = await axios.get(APIFOLLOWER + id);
             const userInfo = {
-                name: data.data[0].name,
-                type: data.data[0].type,
-                _id: data.data[0]._id,
-                token: data.token
-            }
-            localStorage.setItem('user', JSON.stringify(userInfo));
-            
-            //update user
+                 name: data.data.name,
+                 type: data.data.type,
+                 _id: data.data._id,
+                 token: data.token,
+                 following: following.data,
+                 follower: follower.data
+             }
+             localStorage.setItem('user', JSON.stringify(userInfo));
+             //update user
             setUser(userInfo);
             setIsloading(false);
-        })
-        .catch(err => console.log(err))
+        }catch(err)
+        {
+            console.log(err)
+        }
+    }
+    const updateUser = (newUser) => {
+        setUser(newUser);
     }
     
     const values = {
         user: user,
+        updateUser: updateUser,
         signup: signup,
         logout: logout,
         login: login,

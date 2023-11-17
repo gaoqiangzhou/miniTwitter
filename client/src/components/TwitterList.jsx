@@ -9,7 +9,6 @@ const TwitterList = () => {
     useEffect(() => {
         axios.get(postAPI).then((res) => {
             setPosts(res.data);
-            console.log(posts)
         }).catch(err => {
             console.log("failed to get all posts")
         })
@@ -18,10 +17,12 @@ const TwitterList = () => {
     <div className="flex flex-col gap-y-1">
         
       {posts.map((post) => 
-      <div key = {post._id} value = {post.userId}>
+      <div key = {post._id}>
         <TwitterBox 
         displayName={post.userName} 
         content={post.content} 
+        postId={post._id}
+        userId={post.userId}
         />
         </div>
       )}
