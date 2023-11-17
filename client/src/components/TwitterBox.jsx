@@ -1,13 +1,16 @@
 import React from 'react';
 import { FaHeart, FaCommentAlt, FaMoneyBillWaveAlt } from 'react-icons/fa';
+import { useAuth } from '../contexts/AuthContext';
+import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 
 const TwitterBox = (props) => {
+  const {user} = useAuth();
+  const userId = user?._id;
   return (
-    <div className="bg-white rounded-lg shadow p-4 mb-4">
+    <div className="bg-white rounded-lg shadow p-4 mb-4" postid = {props.postId} userid = {props.userId}>
       <div className="flex items-start">
-        <div>
           <span className="text-blue-600">{props.displayName}</span>
-        </div>
+          {(!(userId===props.userId)) && <SlUserFollow/>}
       </div>
       <div className="mt-2">
         {props.content}

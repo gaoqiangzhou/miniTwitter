@@ -73,4 +73,28 @@ router.put("/", async (req, res) => {
           }
     }
 })
+//get all follower
+router.get("/follower", async (req, res) => {
+  const { userId } = req.body;
+  Subscribe.findOne({userId}).then((result) => {
+    res.send(result.follower)
+  }).catch(err => {
+    res.json({
+      status: "FAILED",
+      message: "Error occurred when get followers",
+    })
+  })
+})
+//get all following
+router.get("/following", async (req, res) => {
+  const { userId } = req.body;
+  Subscribe.findOne({userId}).then((result) => {
+    res.send(result.following)
+  }).catch(err => {
+    res.json({
+      status: "FAILED",
+      message: "Error occurred when get followings",
+    })
+  })
+})
 module.exports = router;
