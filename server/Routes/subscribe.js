@@ -74,8 +74,8 @@ router.put("/", async (req, res) => {
     }
 })
 //get all follower
-router.get("/follower", async (req, res) => {
-  const { userId } = req.body;
+router.get("/follower/:userId", async (req, res) => {
+  const userId = req.params.userId;
   Subscribe.findOne({userId}).then((result) => {
     res.send(result.follower)
   }).catch(err => {
@@ -86,8 +86,8 @@ router.get("/follower", async (req, res) => {
   })
 })
 //get all following
-router.get("/following", async (req, res) => {
-  const { userId } = req.body;
+router.get("/following/:userId", async (req, res) => {
+  const userId = req.params.userId;
   Subscribe.findOne({userId}).then((result) => {
     res.send(result.following)
   }).catch(err => {

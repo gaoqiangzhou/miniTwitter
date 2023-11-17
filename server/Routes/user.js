@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 //user and verification model
 const User = require("../Models/user");
+const Subscribe = require("../Models/subscribe")
 //password handle
 const bcrypt = require("bcrypt");
 //env variables
@@ -97,10 +98,10 @@ router.post("/login", (req, res) => {
             message: "Empty input fields"
         })
     }else{
-        User.find({name}).then(data => {
+        User.findOne({name}).then(data => {
             if(data){
                 //user exists
-                const hashedPassword = data[0].password;
+                const hashedPassword = data.password;
                 bcrypt.compare(password, hashedPassword).then(result => {
                     if(result){
                         //password matchs
