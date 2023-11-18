@@ -72,25 +72,22 @@ const TwitterBox = (props) => {
       });
   };
 
-  const fetchComments = () => {
-    const commentAPI = `http://localhost:3000/post/${props.postId}/comments`;
-
-    axios
-      .get(commentAPI)
-      .then((res) => {
-        setComments(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log("Failed to get comments", err);
-      });
-  };
+  // list the comments
   useEffect(() => {
-    // Fetch comments when the component mounts (initial load)
     if (showComments) {
-      fetchComments();
+      const commentAPI = `http://localhost:3000/post/${props.postId}/comments`;
+
+      axios
+        .get(commentAPI)
+        .then((comments) => {
+          setComments(comments.data);
+          console.log(comments.data);
+        })
+        .catch((err) => {
+          console.log("Failed to get comments", err);
+        });
     }
-  }, [showComments]); // Dependency array ensures it runs when showComments changes
+  }, []); // Dependency array ensures it runs when showComments changes
 
   return (
     <div
@@ -140,18 +137,29 @@ const TwitterBox = (props) => {
         </button>
 
         {showComments && (
-          <form onSubmit={handleCommentSubmit}>
-            <input
-              type="text"
-              value={newComment}
-              onChange={handleCommentChange}
-              placeholder="Add a comment..."
-              className="border border-gray-300 "
-            />
-
-            <button type="submit">Submit</button>
-          </form>
+          <div>
+            <div className="mt-4">
+              <h4 className="text-lg font-semibold mb-2">Comments:</h4>
+              {comments.map((comment) => (
+                <div key={comment._id} className="mb-2">
+                  <span className="text-blue-600">{comment.user}</span>:{" "}
+                  {comment.content}
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleCommentSubmit}>
+              <input
+                type="text"
+                value={newComment}
+                onChange={handleCommentChange}
+                placeholder="Add a comment..."
+                className="border border-gray-300"
+              />
+              <button type="submit">Submit</button>
+            </form>
+          </div>
         )}
+
         <button className="text-blue-500 hover:text-blue-700">
           <FaMoneyBillWaveAlt /> Tip
         </button>
