@@ -23,6 +23,8 @@ const TwitterList = () => {
         content={post.content} 
         postId={post._id}
         userId={post.userId}
+        likeCount={post.likeCount}
+        dislikeCount={post.dislikeCount}
         />
         </div>
       )}
