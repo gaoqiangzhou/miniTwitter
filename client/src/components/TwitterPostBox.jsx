@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { BsFillImageFill } from 'react-icons/bs';
-import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
-
+import React, { useState } from "react";
+import { BsFillImageFill } from "react-icons/bs";
+import { useAuth } from "../contexts/AuthContext";
+import axios from "axios";
 
 const TwitterPostBox = () => {
-  const [tweet, setTweet] = useState('');
-  const {user} = useAuth();
+  const [tweet, setTweet] = useState("");
+  const { user } = useAuth();
   const postAPI = "http://localhost:3000/post";
   const userName = user?.name;
   const userId = user?._id;
@@ -16,14 +15,17 @@ const TwitterPostBox = () => {
   };
 
   const handleSubmitTweet = (e) => {
-    //e.preventDefault();
+    e.preventDefault();
     // Add your logic to handle the tweet submission here
-    axios.post(postAPI, {content: tweet, userId: userId, userName: userName}).then(resp =>{
-      console.log(resp)
-    }).catch(err => {
-      console.log("erro when post a twit")
-    })
-    
+    axios
+      .post(postAPI, { content: tweet, userId: userId, userName: userName })
+      .then((resp) => {
+        console.log(resp);
+        parent.location.reload();
+      })
+      .catch((err) => {
+        console.log("erro when post a twit");
+      });
   };
 
   return (
