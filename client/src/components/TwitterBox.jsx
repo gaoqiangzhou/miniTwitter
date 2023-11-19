@@ -19,8 +19,8 @@ const TwitterBox = (props) => {
 
   
 
-  const [likes, setLikes] = useState([]);
-  const [dislikes, setDisLikes] = useState([]);
+  const [likes, setLikes] = useState(props.initialLikes || []);
+  const [dislikes, setDisLikes] = useState(props.initialDislikes || []);
 
   const subscribe = () => {
     axios
