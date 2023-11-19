@@ -3,12 +3,13 @@ import { FaHeart, FaCommentAlt, FaMoneyBillWaveAlt } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import axios from "axios";
+import CommentList from "./commentlist";
 
 //if user id == postuser id -> nothing
 const TwitterBox = (props) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState([]);
+
   const { user, updateUser } = useAuth();
   const userId = user?._id;
   const SUBAPI = "http://localhost:3000/subscribe";
@@ -65,6 +66,7 @@ const TwitterBox = (props) => {
       .post(API_URL, { content: newComment, user: userId })
       .then((resp) => {
         console.log(resp);
+        setNewComment("");
         parent.location.reload(); // refresh the page
       })
       .catch((err) => {
@@ -72,22 +74,22 @@ const TwitterBox = (props) => {
       });
   };
 
-  // list the comments
-  useEffect(() => {
-    if (showComments) {
-      const commentAPI = `http://localhost:3000/post/${props.postId}/comments`;
+  // // list the comments
+  // useEffect(() => {
+  //   if (showComments) {
+  //     const commentAPI = `http://localhost:3000/post/${props.postId}/comments`;
 
-      axios
-        .get(commentAPI)
-        .then((comments) => {
-          setComments(comments.data);
-          console.log(comments.data);
-        })
-        .catch((err) => {
-          console.log("Failed to get comments", err);
-        });
-    }
-  }, []); // Dependency array ensures it runs when showComments changes
+  //     axios
+  //       .get(commentAPI)
+  //       .then((comments) => {
+  //         setComments(comments.data);
+  //         console.log(comments.data);
+  //       })
+  //       .catch((err) => {
+  //         console.log("Failed to get comments", err);
+  //       });
+  //   }
+  // }, []); // Dependency array ensures it runs when showComments changes
 
   return (
     <div
@@ -138,14 +140,15 @@ const TwitterBox = (props) => {
 
         {showComments && (
           <div>
-            <div className="mt-4">
-              <h4 className="text-lg font-semibold mb-2">Comments:</h4>
-              {comments.map((comment) => (
+            <div className="mt-4 ">
+              {/* <h4 className="text-lg font-semibold mb-2">Comments:</h4> */}
+              {/* {comments.map((comment) => (
                 <div key={comment._id} className="mb-2">
                   <span className="text-blue-600">{comment.user}</span>:{" "}
                   {comment.content}
                 </div>
-              ))}
+              ))} */}
+              <CommentList postId={props.postId} />
             </div>
             <form onSubmit={handleCommentSubmit}>
               <input

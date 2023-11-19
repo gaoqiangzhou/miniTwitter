@@ -57,6 +57,7 @@ router.post("/:postId/comments", async (req, res) => {
 
   try {
     const user = await User.findById(userId);
+
     if (!user) {
       return res
         .status(404)
@@ -72,6 +73,7 @@ router.post("/:postId/comments", async (req, res) => {
 
     const newComment = {
       user: userId,
+      username: user.name,
       content,
     };
 

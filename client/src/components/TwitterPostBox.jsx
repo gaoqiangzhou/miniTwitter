@@ -21,7 +21,7 @@ const TwitterPostBox = () => {
       .post(postAPI, { content: tweet, userId: userId, userName: userName })
       .then((resp) => {
         console.log(resp);
-        parent.location.reload();
+        parent.location.reload(); // refresh the page
       })
       .catch((err) => {
         console.log("erro when post a twit");
