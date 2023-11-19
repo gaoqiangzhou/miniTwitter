@@ -13,6 +13,7 @@ const TwitterBox = (props) => {
   const { user, updateUser } = useAuth();
   const userId = user?._id;
   const SUBAPI = "http://localhost:3000/subscribe";
+  const [comments, setcomments] = useState(props.initcomments || []);
 
   const subscribe = () => {
     axios
@@ -59,37 +60,23 @@ const TwitterBox = (props) => {
   };
 
   const handleCommentSubmit = (e) => {
-    e.preventDefault();
+    //e.preventDefault();
     //update the comment to DB
     const API_URL = `http://localhost:3000/post/${props.postId}/comments`;
+
     axios
       .post(API_URL, { content: newComment, user: userId })
       .then((resp) => {
+        // if (resp.data.status === "FAILED") throw new Error(resp.data.message);
+
         console.log(resp);
         setNewComment("");
-        parent.location.reload(); // refresh the page
+        //parent.location.reload(); // refresh the page
       })
       .catch((err) => {
         console.log("erro when post a comment");
       });
   };
-
-  // // list the comments
-  // useEffect(() => {
-  //   if (showComments) {
-  //     const commentAPI = `http://localhost:3000/post/${props.postId}/comments`;
-
-  //     axios
-  //       .get(commentAPI)
-  //       .then((comments) => {
-  //         setComments(comments.data);
-  //         console.log(comments.data);
-  //       })
-  //       .catch((err) => {
-  //         console.log("Failed to get comments", err);
-  //       });
-  //   }
-  // }, []); // Dependency array ensures it runs when showComments changes
 
   return (
     <div
@@ -135,19 +122,12 @@ const TwitterBox = (props) => {
           onClick={() => setShowComments(!showComments)}
           className="mr-2 text-blue-500 hover:text-blue-700 "
         >
-          <FaCommentAlt /> Comment
+          <FaCommentAlt /> Comment({comments.length})
         </button>
 
         {showComments && (
           <div>
             <div className="mt-4 ">
-              {/* <h4 className="text-lg font-semibold mb-2">Comments:</h4> */}
-              {/* {comments.map((comment) => (
-                <div key={comment._id} className="mb-2">
-                  <span className="text-blue-600">{comment.user}</span>:{" "}
-                  {comment.content}
-                </div>
-              ))} */}
               <CommentList postId={props.postId} />
             </div>
             <form onSubmit={handleCommentSubmit}>
