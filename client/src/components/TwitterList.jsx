@@ -31,7 +31,7 @@ const TwitterList = () => {
         initcomments={post.comments}
         />
         </div>
-      ))}
+      )}
     </div>
   );
 };

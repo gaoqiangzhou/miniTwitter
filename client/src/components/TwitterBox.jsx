@@ -1,10 +1,5 @@
 import React, { useState , useEffect} from "react";
 import { FaHeart, FaCommentAlt, FaMoneyBillWaveAlt } from "react-icons/fa";
-import {
-  FaCommentAlt,
-  FaMoneyBillWaveAlt,
-  
-} from "react-icons/fa";
 import {FcLike, FcDislike} from "react-icons/fc"
 
 import { useAuth } from "../contexts/AuthContext";
