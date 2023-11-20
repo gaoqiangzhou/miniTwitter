@@ -37,16 +37,18 @@ router.post("/", async (req, res) => {
   }
 });
 //get all posts
-router.get("/", async(req, res) =>{
-  Post.find({}).then((posts) => {
-    res.send(posts);
-  }).catch(err => {
-    res.json({
-      status: "FAILED",
-      message: "Failed to get all posts"
-  })
-  })
-})
+router.get("/", async (req, res) => {
+  Post.find({})
+    .then((posts) => {
+      res.send(posts);
+    })
+    .catch((err) => {
+      res.json({
+        status: "FAILED",
+        message: "Failed to get all posts",
+      });
+    });
+});
 
 // Add a comment to a post
 router.post("/:postId/comments", async (req, res) => {
@@ -55,6 +57,7 @@ router.post("/:postId/comments", async (req, res) => {
 
   try {
     const user = await User.findById(userId);
+
     if (!user) {
       return res
         .status(404)
@@ -70,6 +73,7 @@ router.post("/:postId/comments", async (req, res) => {
 
     const newComment = {
       user: userId,
+      username: user.name,
       content,
     };
 
@@ -84,6 +88,31 @@ router.post("/:postId/comments", async (req, res) => {
     res.status(500).json({
       status: "FAILED",
       message: "Error occurred while adding the comment",
+      error: error.message,
+    });
+  }
+});
+router.get("/:postId/comments", async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Post not found" });
+    }
+
+    const comments = post.comments;
+    res.json({
+      status: "SUCCESS",
+      message: "Comments retrieved successfully",
+      data: comments,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "FAILED",
+      message: "Error occurred while retrieving comments",
       error: error.message,
     });
   }

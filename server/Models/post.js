@@ -10,8 +10,7 @@ const postSchema = new mongoose.Schema({
     ref: "User", // Reference to the User model for the user who posted the message
     required: true,
   },
-  userName:
-  {
+  userName: {
     type: String,
     required: true,
   },
@@ -22,6 +21,11 @@ const postSchema = new mongoose.Schema({
         ref: "User", // Reference to the User model for the user who commented
         required: true,
       },
+      username: {
+        type: String,
+        required: true,
+      },
+
       content: {
         type: String,
         required: true,
@@ -72,7 +76,7 @@ const postSchema = new mongoose.Schema({
         required: true,
       },
     },
-  ]
+  ],
 });
 
 const Post = mongoose.model("Post", postSchema);
