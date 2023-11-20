@@ -18,15 +18,18 @@ const TwitterList = () => {
   }, []);
   return (
     <div className="flex flex-col gap-y-1">
-      {posts.map((post) => (
-        <div key={post._id}>
-          <TwitterBox
-            displayName={post.userName}
-            content={post.content}
-            postId={post._id}
-            userId={post.userId}
-            initcomments={post.comments}
-          />
+        
+      {posts.map((post) => 
+      <div key = {post._id}>
+        <TwitterBox 
+        displayName={post.userName} 
+        content={post.content} 
+        postId={post._id}
+        userId={post.userId}
+        initialLikes={post.likes}
+        initialDislikes={post.dislikes}
+        initcomments={post.comments}
+        />
         </div>
       ))}
     </div>

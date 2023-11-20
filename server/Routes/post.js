@@ -152,7 +152,7 @@ router.post("/:postId/like", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       status: "FAILED",
-      message: "Error occurred while adding the comment",
+      message: "Error occurred while adding the likes",
       error: error.message,
     });
   }

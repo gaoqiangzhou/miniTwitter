@@ -11,6 +11,7 @@ export function AuthContextProvider({children}){
     const APILOGIN = "http://localhost:3000/user/login";
     const APIFOLLOWER = "http://localhost:3000/subscribe/follower/";
     const APIFOLLOWING = "http://localhost:3000/subscribe/following/";
+
     const [user, setUser] = useState(null);
     const [isLoading, setIsloading] = useState(null);
     const signup = (name, type, password) => {
@@ -26,7 +27,7 @@ export function AuthContextProvider({children}){
                 _id: data.data._id,
                 token: data.token,
                 following: [],
-                follower: []
+                follower: [],
             }
             localStorage.setItem('user', JSON.stringify(userInfo));
             //update user
@@ -56,7 +57,7 @@ export function AuthContextProvider({children}){
                  _id: data.data._id,
                  token: data.token,
                  following: following.data,
-                 follower: follower.data
+                 follower: follower.data,
              }
              localStorage.setItem('user', JSON.stringify(userInfo));
              //update user

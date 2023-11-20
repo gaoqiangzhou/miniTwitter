@@ -1,19 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useState , useEffect} from "react";
 import { FaHeart, FaCommentAlt, FaMoneyBillWaveAlt } from "react-icons/fa";
+import {
+  FaCommentAlt,
+  FaMoneyBillWaveAlt,
+  
+} from "react-icons/fa";
+import {FcLike, FcDislike} from "react-icons/fc"
+
 import { useAuth } from "../contexts/AuthContext";
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import axios from "axios";
 import CommentList from "./commentlist";
 
 //if user id == postuser id -> nothing
-const TwitterBox = (props) => {
+  const TwitterBox = (props) => {
+
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
-
   const { user, updateUser } = useAuth();
   const userId = user?._id;
   const SUBAPI = "http://localhost:3000/subscribe";
+  const LIKAPI = `http://localhost:3000/post/${props.postId}/like`;
+  const DISLIKAPI = `http://localhost:3000/post/${props.postId}/dislike`;
   const [comments, setcomments] = useState(props.initcomments || []);
+
+  
+
+  const [likes, setLikes] = useState(props.initialLikes || []);
+  const [dislikes, setDisLikes] = useState(props.initialDislikes || []);
 
   const subscribe = () => {
     axios
@@ -55,7 +69,26 @@ const TwitterBox = (props) => {
     return false;
   }
 
-  const handleCommentChange = (e) => {
+  const handlelike = () => {
+    axios
+      .post(LIKAPI, { user: userId })
+      .then((res) => {
+        console.log(res);
+        setLikes([...likes, userId]);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handledislike = () => {
+    axios
+      .post(DISLIKAPI, { user: userId })
+      .then((res) => {
+        console.log(res);
+        setDisLikes([...dislikes, userId]);
+      })
+      .catch((err) => console.log(err));
+  };
+      const handleCommentChange = (e) => {
     setNewComment(e.target.value);
   };
 
@@ -113,10 +146,18 @@ const TwitterBox = (props) => {
         )}
       </div>
       <div className="mt-2">{props.content}</div>
-
       <div className="mt-4 flex">
-        <button className="mr-2 text-blue-500 hover:text-blue-700">
-          <FaHeart /> Like
+        <button
+          onClick={handlelike}
+          className={"mr-2 text-blue-500 hover:text-blue-700"}
+        >
+          <FcLike /> Like <span className="badge">{likes.length}</span>
+        </button>
+        <button
+          onClick={handledislike}
+          className={"mr-2 text-blue-500 hover:text-blue-700"}
+        >
+          <FcDislike /> Dislike <span className="badge">{dislikes.length}</span>
         </button>
         <button
           onClick={() => setShowComments(!showComments)}
