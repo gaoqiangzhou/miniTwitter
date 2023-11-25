@@ -15,13 +15,13 @@ const TwitterPostBox = () => {
   };
 
   const handleSubmitTweet = (e) => {
-    //e.preventDefault();
+    e.preventDefault();
     // Add your logic to handle the tweet submission here
     axios
       .post(postAPI, { content: tweet, userId: userId, userName: userName })
       .then((resp) => {
         console.log(resp);
-        // parent.location.reload(); // refresh the page
+        parent.location.reload(); // refresh the page
       })
       .catch((err) => {
         console.log("erro when post a twit");

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { MdDelete } from "react-icons/md";
 
 const commentlist = (props) => {
   const [comments, setComments] = useState([]);
+
   const commentAPI = `http://localhost:3000/post/${props.postId}/comments`;
   useEffect(() => {
     axios
@@ -22,6 +24,14 @@ const commentlist = (props) => {
         <div key={comment._id} className="mb-2">
           <span className="text-blue-600">{comment.username}</span>:{" "}
           {comment.content}
+          {props.userId == comment.user && (
+            <button
+              onClick={() => props.onDeleteComment(comment._id)}
+              className="ml-2 text-red-500 hover:text-red-700"
+            >
+              <MdDelete /> Delete
+            </button>
+          )}
         </div>
       ))}
     </div>
