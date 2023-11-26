@@ -1,6 +1,6 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { FaHeart, FaCommentAlt, FaMoneyBillWaveAlt } from "react-icons/fa";
-import {FcLike, FcDislike} from "react-icons/fc"
+import { FcLike, FcDislike } from "react-icons/fc";
 
 import { useAuth } from "../contexts/AuthContext";
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
@@ -8,8 +8,7 @@ import axios from "axios";
 import CommentList from "./commentlist";
 
 //if user id == postuser id -> nothing
-  const TwitterBox = (props) => {
-
+const TwitterBox = (props) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
   const { user, updateUser } = useAuth();
@@ -18,8 +17,6 @@ import CommentList from "./commentlist";
   const LIKAPI = `http://localhost:3000/post/${props.postId}/like`;
   const DISLIKAPI = `http://localhost:3000/post/${props.postId}/dislike`;
   const [comments, setcomments] = useState(props.initcomments || []);
-
-  
 
   const [likes, setLikes] = useState(props.initialLikes || []);
   const [dislikes, setDisLikes] = useState(props.initialDislikes || []);
@@ -83,12 +80,12 @@ import CommentList from "./commentlist";
       })
       .catch((err) => console.log(err));
   };
-      const handleCommentChange = (e) => {
+  const handleCommentChange = (e) => {
     setNewComment(e.target.value);
   };
 
   const handleCommentSubmit = (e) => {
-    //e.preventDefault();
+    e.preventDefault();
     //update the comment to DB
     const API_URL = `http://localhost:3000/post/${props.postId}/comments`;
 
@@ -99,13 +96,25 @@ import CommentList from "./commentlist";
 
         console.log(resp);
         setNewComment("");
-        //parent.location.reload(); // refresh the page
+        parent.location.reload(); // refresh the page
       })
       .catch((err) => {
         console.log("erro when post a comment");
       });
   };
-
+  const handleDeleteComment = (commentId) => {
+    // Make a DELETE request to your API endpoint
+    const DELETE_COMMENT_API = `http://localhost:3000/post/${props.postId}/comments/${commentId}`;
+    axios
+      .delete(DELETE_COMMENT_API)
+      .then((response) => {
+        console.log(response.data.message);
+        parent.location.reload();
+      })
+      .catch((error) => {
+        console.error("Error deleting comment:", error);
+      });
+  };
   return (
     <div
       className="bg-white rounded-lg shadow p-4 mb-4"
@@ -163,8 +172,12 @@ import CommentList from "./commentlist";
 
         {showComments && (
           <div>
-            <div className="mt-4 ">
-              <CommentList postId={props.postId} />
+            <div className="mt-4">
+              <CommentList
+                postId={props.postId}
+                userId={userId}
+                onDeleteComment={handleDeleteComment}
+              />
             </div>
             <form onSubmit={handleCommentSubmit}>
               <input

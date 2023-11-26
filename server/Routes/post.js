@@ -118,6 +118,47 @@ router.get("/:postId/comments", async (req, res) => {
   }
 });
 
+// Delete a comment from a post
+router.delete("/:postId/comments/:commentId", async (req, res) => {
+  const postId = req.params.postId;
+  const commentId = req.params.commentId;
+
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Post not found" });
+    }
+
+    // Find the comment by its ID
+    const commentIndex = post.comments.findIndex(
+      (comment) => comment._id == commentId
+    );
+
+    if (commentIndex === -1) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Comment not found" });
+    }
+
+    // Remove the comment from the array
+    post.comments.splice(commentIndex, 1);
+
+    await post.save();
+
+    res.json({ status: "SUCCESS", message: "Comment deleted successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        status: "FAILED",
+        message: "Error occurred while deleting the comment",
+        error: error.message,
+      });
+  }
+});
+
 // Handle liking a post
 router.post("/:postId/like", async (req, res) => {
   const { user: userId } = req.body;
