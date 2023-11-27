@@ -8,6 +8,7 @@ import {FcLike, FcDislike} from "react-icons/fc"
 import { useAuth } from "../contexts/AuthContext";
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import axios from "axios";
+import { FcLikePlaceholder } from "react-icons/fc";
 
 //if user id == postuser id -> nothing
 const TwitterBox = (props) => {
@@ -16,11 +17,13 @@ const TwitterBox = (props) => {
   const SUBAPI = "http://localhost:3000/subscribe";
   const LIKAPI = `http://localhost:3000/post/${props.postId}/like`;
   const DISLIKAPI = `http://localhost:3000/post/${props.postId}/dislike`;
+  const DELETELIKAPI = `http://localhost:3000/post/${props.postId}/like`;
 
   
 
   const [likes, setLikes] = useState(props.initialLikes || []);
   const [dislikes, setDisLikes] = useState(props.initialDislikes || []);
+  
 
   const subscribe = () => {
     axios
@@ -81,6 +84,30 @@ const TwitterBox = (props) => {
       })
       .catch((err) => console.log(err));
   };
+  const handleUnlike = () => {
+    const userLike = likes.find((like) => like.user === userId);
+    if (userLike) {
+      axios
+        .delete(`${DELETELIKAPI}/${userLike._id}`)
+        .then(() => {
+          setLikes(likes.filter((like) => like._id !== userLike._id));
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  const handleUndislike = () => {
+    const userdisLike = dislikes.find((dislike) => dislike.user === userId);
+    if (userdisLike) {
+      axios
+        .delete(`${DISLIKAPI}/${userdisLike._id}`)
+        .then(() => {
+          setDisLikes(dislikes.filter((dislike) => dislike._id !== userdisLike._id));
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   
 
   return (
@@ -131,6 +158,16 @@ const TwitterBox = (props) => {
         >
           <FcDislike /> Dislike <span className="badge">{dislikes.length}</span>
         </button>
+        {likes.some((like) => like.user === userId) && (
+          <button onClick={handleUnlike} className="text-red-500 hover:text-red-700 ml-2">
+            <FcLikePlaceholder /> Unlike
+          </button>
+        )}
+        {dislikes.some((dislike) => dislike.user === userId) && (
+          <button onClick={handleUndislike} className="text-red-500 hover:text-red-700 ml-2">
+            <FcLikePlaceholder /> Undislike
+          </button>
+        )}
         <button className="mr-2 text-blue-500 hover:text-blue-700">
           <FaCommentAlt /> comment
         </button>
