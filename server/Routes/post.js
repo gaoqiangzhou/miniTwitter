@@ -168,19 +168,12 @@ router.post("/:postId/dislike", async (req, res) => {
     });
   }
 });
-// Handle liking a post
-router.post("/:postId/like", async (req, res) => {
-  const { user: userId } = req.body;
+// delect like
+router.delete("/:postId/like/:likeId", async (req, res) => {
   const postId = req.params.postId;
+  const likeId = req.params.likeId;
 
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: "FAILED", message: "User not found" });
-    }
-
     const post = await Post.findById(postId);
     if (!post) {
       return res
@@ -188,21 +181,71 @@ router.post("/:postId/like", async (req, res) => {
         .json({ status: "FAILED", message: "Post not found" });
     }
 
-    const newlike = {
-      user: userId,
-    };
+    // Find the index of the like in the likes array
+    const likeIndex = post.likes.findIndex(
+      (like) => like._id.toString() === likeId
+    );
 
-    post.likes.push(newlike);
+    // Check if the like exists
+    if (likeIndex === -1) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Like not found" });
+    }
+
+    // Remove the like from the array
+    post.likes.splice(likeIndex, 1);
+
     await post.save();
     res.json({
       status: "SUCCESS",
-      message: "likes added successfully",
-      data: newlike,
+      message: "Like deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       status: "FAILED",
-      message: "Error occurred while adding the like",
+      message: "Error occurred while deleting the like",
+      error: error.message,
+    });
+  }
+});
+// delect dislike
+router.delete("/:postId/dislike/:dislikeId", async (req, res) => {
+  const postId = req.params.postId;
+  const dislikeId = req.params.dislikeId;
+
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Post not found" });
+    }
+
+    // Find the index of the like in the likes array
+    const dislikeIndex = post.dislikes.findIndex(
+      (dislike) => dislike._id.toString() === dislikeId
+    );
+
+    // Check if the like exists
+    if (dislikeIndex === -1) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "disLike not found" });
+    }
+
+    // Remove the like from the array
+    post.dislikes.splice(dislikeIndex, 1);
+
+    await post.save();
+    res.json({
+      status: "SUCCESS",
+      message: "disLike deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "FAILED",
+      message: "Error occurred while deleting the like",
       error: error.message,
     });
   }
