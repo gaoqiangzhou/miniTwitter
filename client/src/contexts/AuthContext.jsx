@@ -9,8 +9,7 @@ export function useAuth(){
 export function AuthContextProvider({children}){
     const APISIGNUP = "http://localhost:3000/user/register";
     const APILOGIN = "http://localhost:3000/user/login";
-    const APIFOLLOWER = "http://localhost:3000/subscribe/follower/";
-    const APIFOLLOWING = "http://localhost:3000/subscribe/following/";
+    const API_USER = (id) => `http://localhost:3000/user/profile/${id}`
 
     const [user, setUser] = useState(null);
     const [isLoading, setIsloading] = useState(null);
@@ -49,15 +48,14 @@ export function AuthContextProvider({children}){
             if(res.data.status == "FAILED") throw new Error(res.data.message);
             const data = res.data;
             const id = data.data._id;
-            const following = await axios.get(APIFOLLOWING + id);
-            const follower = await axios.get(APIFOLLOWER + id);
+            const user = (await axios.get(API_USER(id))).data
             const userInfo = {
                  name: data.data.name,
                  type: data.data.type,
                  _id: data.data._id,
                  token: data.token,
-                 following: following.data,
-                 follower: follower.data,
+                 following: user.followings,
+                 follower: user.followers,
              }
              localStorage.setItem('user', JSON.stringify(userInfo));
              //update user

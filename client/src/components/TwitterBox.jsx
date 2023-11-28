@@ -29,7 +29,7 @@ const TwitterBox = (props) => {
         //update user state and localstorage after succefully sub
         const newUserState = {
           ...user,
-          following: [...user.following, props.userId],
+          following: [...user.following, {_id: props.userId, name: props.displayName}],
         };
         localStorage.setItem("user", JSON.stringify(newUserState));
         updateUser(newUserState);
@@ -44,7 +44,7 @@ const TwitterBox = (props) => {
         //update user state and localstorage after succefully unsub
         const newUserState = {
           ...user,
-          following: user.following.filter((e) => e !== props.userId),
+          following: user.following.filter((e) => e._id !== props.userId),
         };
         localStorage.setItem("user", JSON.stringify(newUserState));
         updateUser(newUserState);
@@ -132,7 +132,7 @@ const TwitterBox = (props) => {
           </button>
         ) : (
           userId !== props.userId &&
-          (contains(user.following, props.userId) ? (
+          (user.following.reduce((acc, cur) => acc || (cur._id === props.userId), false) ? (
             <button
               onClick={unSubscribe}
               className="mr-2 text-blue-500 hover:text-blue-700"
