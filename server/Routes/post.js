@@ -357,5 +357,20 @@ router.post("/:postId/complain", async (req, res) => {
     });
   }
 });
+//get posts by user
+router.get("/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  try
+  {
+    const posts = await Post.find({userId: userId})
+    res.send(posts)
+  }catch(err)
+  {
+    res.json({
+      status: "FAILED",
+      message: "error happens when get posts"
+    })
+  }
+})
 
 module.exports = router;
