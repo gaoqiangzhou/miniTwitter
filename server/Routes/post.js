@@ -169,9 +169,9 @@ router.post("/:postId/dislike", async (req, res) => {
   }
 });
 // delect like
-router.delete("/:postId/like/:likeId", async (req, res) => {
+router.delete("/:postId/like/:userId", async (req, res) => {
   const postId = req.params.postId;
-  const likeId = req.params.likeId;
+  const userId = req.params.userId;
 
   try {
     const post = await Post.findById(postId);
@@ -181,25 +181,20 @@ router.delete("/:postId/like/:likeId", async (req, res) => {
         .json({ status: "FAILED", message: "Post not found" });
     }
 
-    // Find the index of the like in the likes array
-    const likeIndex = post.likes.findIndex(
-      (like) => like._id.toString() === likeId
-    );
-
-    // Check if the like exists
-    if (likeIndex === -1) {
+    const like = post.likes.find((like) => like.user.toString() === userId);
+    if (!like) {
       return res
         .status(404)
         .json({ status: "FAILED", message: "Like not found" });
     }
 
-    // Remove the like from the array
-    post.likes.splice(likeIndex, 1);
-
+    post.likes.pull(like);
     await post.save();
+
     res.json({
       status: "SUCCESS",
       message: "Like deleted successfully",
+      data: like,
     });
   } catch (error) {
     res.status(500).json({
@@ -209,10 +204,12 @@ router.delete("/:postId/like/:likeId", async (req, res) => {
     });
   }
 });
+
+
 // delect dislike
-router.delete("/:postId/dislike/:dislikeId", async (req, res) => {
+router.delete("/:postId/dislike/:userId", async (req, res) => {
   const postId = req.params.postId;
-  const dislikeId = req.params.dislikeId;
+  const userId = req.params.userId;
 
   try {
     const post = await Post.findById(postId);
@@ -222,34 +219,30 @@ router.delete("/:postId/dislike/:dislikeId", async (req, res) => {
         .json({ status: "FAILED", message: "Post not found" });
     }
 
-    // Find the index of the like in the likes array
-    const dislikeIndex = post.dislikes.findIndex(
-      (dislike) => dislike._id.toString() === dislikeId
-    );
-
-    // Check if the like exists
-    if (dislikeIndex === -1) {
+    const dislike = post.dislikes.find((dislike) => dislike.user.toString() === userId);
+    if (!dislike) {
       return res
         .status(404)
-        .json({ status: "FAILED", message: "disLike not found" });
+        .json({ status: "FAILED", message: "Dislike not found" });
     }
 
-    // Remove the like from the array
-    post.dislikes.splice(dislikeIndex, 1);
-
+    post.dislikes.pull(dislike);
     await post.save();
+
     res.json({
       status: "SUCCESS",
-      message: "disLike deleted successfully",
+      message: "Dislike deleted successfully",
+      data: dislike,
     });
   } catch (error) {
     res.status(500).json({
       status: "FAILED",
-      message: "Error occurred while deleting the like",
+      message: "Error occurred while deleting the dislike",
       error: error.message,
     });
   }
 });
+
 // Handle tips a post
 router.post("/:postId/tips", async (req, res) => {
   const { user: userId, amount } = req.body;
