@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaHeart, FaCommentAlt, FaMoneyBillWaveAlt } from "react-icons/fa";
 import { FcLike, FcDislike } from "react-icons/fc";
-
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import axios from "axios";
@@ -10,6 +10,7 @@ import CommentList from "./commentlist";
 //if user id == postuser id -> nothing
 const TwitterBox = (props) => {
   const [showComments, setShowComments] = useState(false);
+  const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
   const { user, updateUser } = useAuth();
   const userId = user?._id;
@@ -51,15 +52,6 @@ const TwitterBox = (props) => {
       })
       .catch((err) => console.log(err));
   };
-  function contains(a, obj) {
-    var i = a.length;
-    while (i--) {
-      if (a[i] === obj) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   const handlelike = () => {
     axios
@@ -102,6 +94,9 @@ const TwitterBox = (props) => {
         console.log("erro when post a comment");
       });
   };
+  const toProfile = () => {
+    navigate("/profile/"+props.userId)
+  }
   const handleDeleteComment = (commentId) => {
     // Make a DELETE request to your API endpoint
     const DELETE_COMMENT_API = `http://localhost:3000/post/${props.postId}/comments/${commentId}`;
@@ -122,7 +117,7 @@ const TwitterBox = (props) => {
       userid={props.userId}
     >
       <div className="flex items-start">
-        <span className="text-blue-600">{props.displayName}</span>
+        <span onClick = {toProfile} className="text-blue-600">{props.displayName}</span>
         {!user ? (
           <button
             onClick={subscribe}
