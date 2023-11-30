@@ -59,23 +59,75 @@ const TwitterBox = (props) => {
   };
 
   const handlelike = () => {
-    axios
-      .post(LIKAPI, { user: userId })
+    //if already liked?
+    if(likes.reduce(
+      (acc, cur) => acc || (cur.user === user._id),
+      false
+    ))
+    //cancel like
+    {
+      axios.put(LIKAPI, {userId: user._id})
       .then((res) => {
-        console.log(res);
-        setLikes([...likes, userId]);
+        setLikes(likes.filter((ea) => ea.user != user._id));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+    }
+    else
+    {
+      //if disliked?
+      if(dislikes.reduce(
+        (acc, cur) => acc || (cur.user === user._id),
+        false
+      ))
+      {
+        //cancel dislike
+        axios.put(DISLIKAPI, {userId: user._id})
+        .then((res) => {
+          setDisLikes(dislikes.filter((ea) => ea.user != user._id));
+        }).catch((err) => console.log(err))
+      }
+      //add like
+      axios.post(LIKAPI, {userId: user._id})
+      .then((res) => {
+        setLikes([...likes, {user: user._id}]);
+      }).catch((err) => console.log(err))
+    }
   };
 
   const handledislike = () => {
-    axios
-      .post(DISLIKAPI, { user: userId })
+    //if already disliked?
+    if(dislikes.reduce(
+      (acc, cur) => acc || (cur.user === user._id),
+      false
+    ))
+    //cancel dislike
+    {
+      axios.put(DISLIKAPI, {userId: user._id})
       .then((res) => {
-        console.log(res);
-        setDisLikes([...dislikes, userId]);
+        setDisLikes(dislikes.filter((ea) => ea.user != user._id));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+    }
+    else
+    {
+      //if liked?
+      if(likes.reduce(
+        (acc, cur) => acc || (cur.user === user._id),
+        false
+      ))
+      {
+        //cancel like
+        axios.put(LIKAPI, {userId: user._id})
+        .then((res) => {
+          setLikes(likes.filter((ea) => ea.user != user._id));
+        }).catch((err) => console.log(err))
+      }
+      //add dislike
+      axios.post(DISLIKAPI, {userId: user._id})
+      .then((res) => {
+        setDisLikes([...dislikes, {user: user._id}]);
+      }).catch((err) => console.log(err))
+    }
   };
   const handleCommentChange = (e) => {
     setNewComment(e.target.value);
