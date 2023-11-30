@@ -377,5 +377,27 @@ router.get("/:userId", async (req, res) => {
     })
   }
 })
+//add a read
+router.post("/:postId/reads", async (req, res) => {
+  const postId = req.params.postId;
+  const { userId } = req.body;
+  try
+  {
+    await Post.updateOne(
+      {_id: postId},
+      {$addToSet: { reads: userId} }
+    );
+    res.json({
+      status: "SUCCESS",
+      message: "read added",
+    });
+  }catch(err)
+  {
+    res.json({
+      status: "FAILED",
+      message: "error happens when adding reads",
+    });
+  }
+})
 
 module.exports = router;

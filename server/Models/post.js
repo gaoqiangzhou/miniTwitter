@@ -78,6 +78,13 @@ const postSchema = new mongoose.Schema(
         },
       },
     ],
+    reads: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", // Reference to the User model for the user who reads
+        required: true,
+      }
+    ],
   },
   { timestamps: true }
 );
