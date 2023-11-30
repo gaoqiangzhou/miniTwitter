@@ -59,6 +59,7 @@ const Profile = () => {
             <div className="bg-white relative shadow rounded-lg w-5/6 md:w-5/6  lg:w-4/6 xl:w-3/6 mx-auto"> 
                 <div>
                     <h1 className="font-bold text-center text-3xl text-gray-900">{profileInfo?.name}</h1>
+                    <p className="text-center text-sm text-gray-400 font-medium">Balance:{profileInfo?.balance}</p>
                     <p className="text-center text-sm text-gray-400 font-medium">{profileInfo?.type}</p>
                     
                     {(profileInfo?._id != user?._id) && (

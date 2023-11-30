@@ -149,7 +149,7 @@ const TwitterBox = (props) => {
       userid={props.userId}
     >
       <div className="flex items-start">
-        <span onClick={toProfile} className="text-blue-600">
+        <span onClick={toProfile} className="text-blue-600 cursor-pointer">
           {props.displayName}
         </span>
         {!user ? (
