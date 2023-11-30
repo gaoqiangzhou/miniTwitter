@@ -238,19 +238,12 @@ router.post("/:postId/dislike", async (req, res) => {
     });
   }
 });
-// Handle liking a post
-router.post("/:postId/like", async (req, res) => {
-  const { user: userId } = req.body;
+// delect like
+router.delete("/:postId/like/:userId", async (req, res) => {
   const postId = req.params.postId;
+  const userId = req.params.userId;
 
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: "FAILED", message: "User not found" });
-    }
-
     const post = await Post.findById(postId);
     if (!post) {
       return res
@@ -258,21 +251,63 @@ router.post("/:postId/like", async (req, res) => {
         .json({ status: "FAILED", message: "Post not found" });
     }
 
-    const newlike = {
-      user: userId,
-    };
+    const like = post.likes.find((like) => like.user.toString() === userId);
+    if (!like) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Like not found" });
+    }
 
-    post.likes.push(newlike);
+    post.likes.pull(like);
     await post.save();
+
     res.json({
       status: "SUCCESS",
-      message: "likes added successfully",
-      data: newlike,
+      message: "Like deleted successfully",
+      data: like,
     });
   } catch (error) {
     res.status(500).json({
       status: "FAILED",
-      message: "Error occurred while adding the like",
+      message: "Error occurred while deleting the like",
+      error: error.message,
+    });
+  }
+});
+
+
+// delect dislike
+router.delete("/:postId/dislike/:userId", async (req, res) => {
+  const postId = req.params.postId;
+  const userId = req.params.userId;
+
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Post not found" });
+    }
+
+    const dislike = post.dislikes.find((dislike) => dislike.user.toString() === userId);
+    if (!dislike) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Dislike not found" });
+    }
+
+    post.dislikes.pull(dislike);
+    await post.save();
+
+    res.json({
+      status: "SUCCESS",
+      message: "Dislike deleted successfully",
+      data: dislike,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "FAILED",
+      message: "Error occurred while deleting the dislike",
       error: error.message,
     });
   }
