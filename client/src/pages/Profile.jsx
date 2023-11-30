@@ -61,9 +61,9 @@ const Profile = () => {
                     <h1 className="font-bold text-center text-3xl text-gray-900">{profileInfo?.name}</h1>
                     <p className="text-center text-sm text-gray-400 font-medium">{profileInfo?.type}</p>
                     
-                    {(profileInfo?.type != user?.type) && (
+                    {(profileInfo?._id != user?._id) && (
                     <div className="my-5 px-6">
-                        {(user?.following.reduce((acc, cur) => acc || (cur._id === profileInfo?._id), false)) ? 
+                        {(user?.following?.reduce((acc, cur) => acc || (cur._id === profileInfo?._id), false)) ? 
                         (<button onClick={unSubscribe} className="w-full text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white">unFollow</button>) :
                         (<button onClick={subscribe} className="w-full text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white">Follow</button>)}
                     </div>)}
@@ -91,7 +91,7 @@ const Profile = () => {
                         </Tab.Panel>
                         <Tab.Panel className="mt-5 w-full flex flex-col items-center overflow-hidden text-sm">
                           {
-                            profileInfo?.followers.map((ea) =>
+                            profileInfo?.followers?.map((ea) =>
                             <div onClick={() => navigate("../profile/"+ea._id, { replace: true })} className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
                               {ea.name}
                             </div>
@@ -100,7 +100,7 @@ const Profile = () => {
                         </Tab.Panel>
                         <Tab.Panel className="mt-5 w-full flex flex-col items-center overflow-hidden text-sm">
                         {
-                            profileInfo?.followings.map((ea) =>
+                            profileInfo?.followings?.map((ea) =>
                             <div onClick={() => navigate("../profile/"+ea._id, { replace: true })} className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 w-full block hover:bg-gray-100 transition duration-150">
                               {ea.name}
                             </div>

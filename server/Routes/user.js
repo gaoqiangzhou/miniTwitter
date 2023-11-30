@@ -161,30 +161,44 @@ router.get("/profile/:id", async (req, res) => {
   try {
     const user = await User.findOne({ _id: userId });
     const subscribeInfo = await Subscribe.findOne({ userId: userId });
-    const followingNameIds = (
-      await Promise.all(
-        subscribeInfo.following
-          .map((ea) => ea + "")
-          .map(async (e) => User.findOne({ _id: e }))
-      )
-    ).map((el) => ({ _id: el._id, name: el.name }));
-    const followerNameIds = (
-      await Promise.all(
-        subscribeInfo.follower
-          .map((ea) => ea + "")
-          .map(async (e) => User.findOne({ _id: e }))
-      )
-    ).map((el) => ({ _id: el._id, name: el.name }));
-
-    const userInfo = {
-      _id: user._id,
-      name: user.name,
-      type: user.type,
-      followers: followerNameIds,
-      followings: followingNameIds,
-    };
-
-    res.send(userInfo);
+    if(subscribeInfo)
+    {
+        const followingNameIds = (
+            await Promise.all(
+              subscribeInfo.following
+                .map((ea) => ea + "")
+                .map(async (e) => User.findOne({ _id: e }))
+            )
+          ).map((el) => ({ _id: el._id, name: el.name }));
+          const followerNameIds = (
+            await Promise.all(
+              subscribeInfo.follower
+                .map((ea) => ea + "")
+                .map(async (e) => User.findOne({ _id: e }))
+            )
+          ).map((el) => ({ _id: el._id, name: el.name }));
+      
+          const userInfo = {
+            _id: user._id,
+            name: user.name,
+            type: user.type,
+            followers: followerNameIds,
+            followings: followingNameIds,
+          };
+      
+          res.send(userInfo);
+    }
+    else
+    {
+        const userInfo = {
+            _id: user._id,
+            name: user.name,
+            type: user.type,
+            followers: [],
+            followings: [],
+        };
+        res.send(userInfo);
+    }
   } catch (err) {
     res.json({
       status: "FAILED",
