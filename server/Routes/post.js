@@ -117,7 +117,6 @@ router.get("/:postId/comments", async (req, res) => {
     });
   }
 });
-
 // Delete a comment from a post
 router.delete("/:postId/comments/:commentId", async (req, res) => {
   const postId = req.params.postId;
@@ -198,7 +197,29 @@ router.post("/:postId/like", async (req, res) => {
     });
   }
 });
-
+//cancel like
+router.put("/:postId/like", async (req, res) => {
+  const { userId } = req.body;
+  const postId = req.params.postId;
+  try
+  {
+    await Post.updateOne(
+      {_id: postId},
+      {$pull: { likes: {user: userId}} },
+      {multi:true }
+    );
+    res.json({
+      status: "SUCCESS",
+      message: "like canceled",
+    });
+  }catch(err)
+  {
+    res.json({
+      status: "FAILED",
+      message: "error happens when cancel like",
+    });
+  }
+})
 // Handle disliking a post
 router.post("/:postId/dislike", async (req, res) => {
   const { user: userId } = req.body;
@@ -238,45 +259,29 @@ router.post("/:postId/dislike", async (req, res) => {
     });
   }
 });
-// Handle liking a post
-router.post("/:postId/like", async (req, res) => {
-  const { user: userId } = req.body;
+//cancel dislike
+router.put("/:postId/dislike", async (req, res) => {
+  const { userId } = req.body;
   const postId = req.params.postId;
-
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: "FAILED", message: "User not found" });
-    }
-
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res
-        .status(404)
-        .json({ status: "FAILED", message: "Post not found" });
-    }
-
-    const newlike = {
-      user: userId,
-    };
-
-    post.likes.push(newlike);
-    await post.save();
+  try
+  {
+    await Post.updateOne(
+      {_id: postId},
+      {$pull: { dislikes: {user: userId}} },
+      {multi:true }
+    );
     res.json({
       status: "SUCCESS",
-      message: "likes added successfully",
-      data: newlike,
+      message: "dislike canceled",
     });
-  } catch (error) {
-    res.status(500).json({
+  }catch(err)
+  {
+    res.json({
       status: "FAILED",
-      message: "Error occurred while adding the like",
-      error: error.message,
+      message: "error happens when cancel dislike",
     });
   }
-});
+})
 // Handle tips a post
 router.post("/:postId/tips", async (req, res) => {
   const { user: userId, amount } = req.body;
