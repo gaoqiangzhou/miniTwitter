@@ -160,7 +160,7 @@ router.delete("/:postId/comments/:commentId", async (req, res) => {
 
 // Handle liking a post
 router.post("/:postId/like", async (req, res) => {
-  const { user: userId } = req.body;
+  const { userId } = req.body;
   const postId = req.params.postId;
 
   try {
@@ -222,7 +222,7 @@ router.put("/:postId/like", async (req, res) => {
 })
 // Handle disliking a post
 router.post("/:postId/dislike", async (req, res) => {
-  const { user: userId } = req.body;
+  const { userId } = req.body;
   const postId = req.params.postId;
 
   try {
