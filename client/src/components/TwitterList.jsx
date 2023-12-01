@@ -29,6 +29,7 @@ const TwitterList = () => {
         initialLikes={post.likes}
         initialDislikes={post.dislikes}
         initcomments={post.comments}
+        initReads={post.reads}
         />
         </div>
       )}
