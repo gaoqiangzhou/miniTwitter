@@ -67,6 +67,7 @@ router.post("/register", (req, res) => {
                   //once successfully add a user to the database
                   //create a token
                   const token = createToken(result._id);
+                  Subscribe.create({userId: result._id, following: [], follower: []})
                   res.json({
                     status: "SUCCESS",
                     message: "User registered sucessful",

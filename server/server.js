@@ -5,12 +5,14 @@ const mongoose = require("mongoose");
 const userRoute = require("./Routes/user");
 const postRoute = require("./Routes/post");
 const subscribeRoute = require("./Routes/subscribe");
+const suggestRoute = require("./Routes/suggest");
 
 app.use(cors());
 app.use(express.json());
 app.use("/user", userRoute);
 app.use("/post", postRoute);
 app.use("/subscribe", subscribeRoute);
+app.use("/suggest", suggestRoute);
 
 mongoose
   .connect(
