@@ -10,8 +10,8 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    login(username, password);
-    navigate("/");
+    login(username, password)
+    .then((res) => res && navigate("../suggest/"+res?._id, { replace: true }))
   }
   return (
     <form onSubmit={handleSubmit}>

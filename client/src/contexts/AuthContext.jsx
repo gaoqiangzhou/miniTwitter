@@ -63,6 +63,7 @@ export function AuthContextProvider({children}){
              //update user
             setUser(userInfo);
             setIsloading(false);
+            return userInfo;
         }catch(err)
         {
             console.log(err)

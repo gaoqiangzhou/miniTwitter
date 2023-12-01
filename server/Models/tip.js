@@ -6,19 +6,17 @@ const tipsschema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  receiver: [
+  receiver: 
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-  ],
-  tipAmount: [
+  tipAmount: 
     {
       type: Number,
       required: true,
     },
-  ],
 });
 const Tip = new mongoose.model("Tip", tipsschema);
 module.exports = Tip;
