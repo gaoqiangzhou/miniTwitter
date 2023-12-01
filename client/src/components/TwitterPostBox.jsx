@@ -22,24 +22,24 @@ const TwitterPostBox = () => {
   };
 
   const handleTweetChange = (e) => {
-    console.log("New tweet value:", e.target.value);
-
     setTweet(e.target.value);
   };
 
-  const handleSubmitTweet = async (e) => {
+  const handleSubmitTweet =  (e) => {
     e.preventDefault();
     const filteredContent = filterTweet(tweet);
     const tabooWordCount = tabooWordList.reduce((count, word) => {
-      const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
+      const regex = new RegExp(`\\b${word.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}\\b`, 'gi');
       return count + (filteredContent.match(regex) || []).length;
     }, 0);
 
     if (tabooWordCount <= 2) {
       try {
-        await axios.post(postAPI, { content: filteredContent, userId, userName });
-        console.log("Tweet posted successfully");
-        // Optionally update state or trigger re-render here
+        axios.post(postAPI, { content: filteredContent, userId, userName })
+        .then((resp) => {
+          console.log(resp);
+          parent.location.reload();
+        })
       } catch (error) {
         console.error("Error when posting a tweet", error);
       }
