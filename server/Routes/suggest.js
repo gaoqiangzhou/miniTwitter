@@ -10,24 +10,12 @@ router.get("/:userId", async (req, res) => {
     //first find all users the liked
     const likedUsersId = (await Post.find({"likes.user": {$in: [userId]}}))
                          .map((ea) => ea.userId)
-                    //   .map(JSON.stringify)
-                    //   .filter((ea, pos, self) => self.indexOf(ea) === pos)//remove dup
-                    //   .map(JSON.parse)
     //find all tipped users
     const tippedUsersId = (await Tip.find({sender: userId}))
                           .map((ea) => ea.receiver)
-    // const tippedUsers = (await Promise.all(
-    //                     tippedTransctions
-    //                     .map((ea) => ea.receiver + "")
-    //                     .filter((ea, pos, self) => self.indexOf(ea) === pos)//remove dup
-    //                     .map(async (ea) => User.findOne({ _id: ea }))))
-    //                     .map((ea) => ({_id: ea._id, name: ea.name}))
     //find all read users
     const readUserId = (await Post.find({reads: {$in: [userId]}}))
                       .map((ea) => ea.userId)
-                    //   .map(JSON.stringify)
-                    //   .filter((ea, pos, self) => self.indexOf(ea) === pos)//remove dup
-                    //   .map(JSON.parse)
     //find the user's following's following
     const followingsId = (await Subscribe.findOne({ userId: userId }))
                         .following
@@ -37,7 +25,6 @@ router.get("/:userId", async (req, res) => {
                                 .map(async (ea) => Subscribe.findOne({ userId: ea }))))
                                 .map((ea) => ea.following)
                                 .flat()
-                                // .map((ea) => ea + "")
     //combines all users and remove dups and already follows and iteself
     const suggestUsers = (await Promise.all(
                          [...likedUsersId, ...tippedUsersId, ...readUserId, ...followingsFollowingId]
