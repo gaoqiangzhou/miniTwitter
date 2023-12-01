@@ -9,16 +9,22 @@ const TwitterPostBox = () => {
   const postAPI = "http://localhost:3000/post";
   const userName = user?.name;
   const userId = user?._id;
-  const tabooWordList = ["nigger", "bitch","dam"]; // Replace with your actual taboo words
+  const tabooWordList = ["fuck", "asshole","damn"]; // Replace with your actual taboo words
 
 
   const filterTweet = (tweet) => {
     let filteredTweet = tweet;
+    let filterCount = 0;
     tabooWordList.forEach((word) => {
       const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
+      console.log(regex);
+      if(regex.exec(filteredTweet)){
+        filterCount +=1;
+      }
       filteredTweet = filteredTweet.replace(regex, (match) => '*'.repeat(match.length));
-    }, 0);
-    return filteredTweet;
+    });
+    console.log("Filtered Tweet:", filteredTweet);
+    return [filterCount,filteredTweet];
   };
 
   const handleTweetChange = (e) => {
@@ -27,26 +33,29 @@ const TwitterPostBox = () => {
 
   const handleSubmitTweet =  (e) => {
     e.preventDefault();
-    const filteredContent = filterTweet(tweet);
-    const tabooWordCount = tabooWordList.reduce((count, word) => {
-      const regex = new RegExp(`\\b${word.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}\\b`, 'gi');
-      return count + (filteredContent.match(regex) || []).length;
-    }, 0);
+    const filterResult = filterTweet(tweet);
+    const filteredContent = filterResult[1];
+    let tabooWordCount = filterResult[0];
+    
 
-    if (tabooWordCount <= 2) {
+  console.log("Taboo Word Count:", tabooWordCount);
+
+
+    if (tabooWordCount >= 3) {
+      console.log("Tweet blocked due to excessive taboo words.");
+      // Optionally show a warning to the user
+      alert("Your message contains three or more taboo words. Please review your message.");
+    } else {
       try {
         axios.post(postAPI, { content: filteredContent, userId, userName })
-        .then((resp) => {
-          console.log(resp);
-          parent.location.reload();
+        .then((res)=>{
+          console.log(res);
+          //parent.location.reload();
         })
+  
       } catch (error) {
         console.error("Error when posting a tweet", error);
       }
-    } else {
-      console.log("Tweet blocked due to excessive taboo words.");
-      // Optionally show a warning to the user
-      alert("Your message contains excessive taboo words. Please review your message.");
     }
   };
 
