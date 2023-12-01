@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaHeart, FaCommentAlt, FaMoneyBillWaveAlt } from "react-icons/fa";
+import { CiRead } from "react-icons/ci";
 import { FcLike, FcDislike } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -19,10 +20,24 @@ const TwitterBox = (props) => {
   const SUBAPI = "http://localhost:3000/subscribe";
   const LIKAPI = `http://localhost:3000/post/${props.postId}/like`;
   const DISLIKAPI = `http://localhost:3000/post/${props.postId}/dislike`;
+  const READ_API = `http://localhost:3000/post/${props.postId}/reads`;
   const [comments, setcomments] = useState(props.initcomments || []);
 
   const [likes, setLikes] = useState(props.initialLikes || []);
   const [dislikes, setDisLikes] = useState(props.initialDislikes || []);
+  const [reads, setReads] = useState(props.initReads);
+
+  const addReads = () => {
+    //will be called when a user comment, like, dislike
+    axios.post(READ_API, {userId: user._id})
+    .then((res) => {
+      if(reads.reduce(
+        (acc, cur) => acc && (cur != user._id),
+        true
+      )) setReads([...reads, user._id])
+    })
+    .catch(err => console.log(err))
+  }
 
   const subscribe = () => {
     axios
@@ -41,6 +56,7 @@ const TwitterBox = (props) => {
         updateUser(newUserState);
       })
       .catch((err) => console.log(err));
+      addReads();
   };
   const unSubscribe = () => {
     axios
@@ -56,9 +72,11 @@ const TwitterBox = (props) => {
         updateUser(newUserState);
       })
       .catch((err) => console.log(err));
+      addReads();
   };
 
   const handlelike = () => {
+    addReads();
     //if already liked?
     if(likes.reduce(
       (acc, cur) => acc || (cur.user === user._id),
@@ -95,6 +113,7 @@ const TwitterBox = (props) => {
   };
 
   const handledislike = () => {
+    addReads();
     //if already disliked?
     if(dislikes.reduce(
       (acc, cur) => acc || (cur.user === user._id),
@@ -130,6 +149,7 @@ const TwitterBox = (props) => {
     }
   };
   const handleCommentChange = (e) => {
+    addReads();
     setNewComment(e.target.value);
   };
 
@@ -152,6 +172,7 @@ const TwitterBox = (props) => {
       });
   };
   const toProfile = () => {
+    addReads();
     navigate("/profile/" + props.userId);
   };
   const handleDeleteComment = (commentId) => {
@@ -172,6 +193,7 @@ const TwitterBox = (props) => {
   };
 
   const handleTipSubmit = (e) => {
+    addReads();
     e.preventDefault();
     //update the comment to DB
     const parsedTipAmount = parseFloat(newTip);
@@ -248,7 +270,7 @@ const TwitterBox = (props) => {
           <FcDislike /> Dislike <span className="badge">{dislikes.length}</span>
         </button>
         <button
-          onClick={() => setShowComments(!showComments)}
+          onClick={() => {setShowComments(!showComments); addReads();}}
           className="mr-2 text-blue-500 hover:text-blue-700 "
         >
           <FaCommentAlt /> Comment({comments.length})
@@ -298,6 +320,11 @@ const TwitterBox = (props) => {
             </form>
           </div>
         )}
+        <div
+          className="mr-2 text-blue-500 hover:text-blue-700 "
+        >
+          <CiRead  /> Reads({reads?.length})
+        </div>
       </div>
     </div>
   );

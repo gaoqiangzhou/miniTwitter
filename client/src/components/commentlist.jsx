@@ -11,7 +11,6 @@ const commentlist = (props) => {
       .get(commentAPI)
       .then((response) => {
         setComments(response.data.data);
-        console.log("API response:", response.data.data);
       })
       .catch((err) => {
         console.log("Failed to get comments", err);
