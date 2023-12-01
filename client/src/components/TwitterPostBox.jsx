@@ -9,23 +9,45 @@ const TwitterPostBox = () => {
   const postAPI = "http://localhost:3000/post";
   const userName = user?.name;
   const userId = user?._id;
+  const tabooWordList = ["nigger", "bitch","dam"]; // Replace with your actual taboo words
+
+
+  const filterTweet = (tweet) => {
+    let filteredTweet = tweet;
+    tabooWordList.forEach((word) => {
+      const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
+      filteredTweet = filteredTweet.replace(regex, (match) => '*'.repeat(match.length));
+    }, 0);
+    return filteredTweet;
+  };
 
   const handleTweetChange = (e) => {
+    console.log("New tweet value:", e.target.value);
+
     setTweet(e.target.value);
   };
 
-  const handleSubmitTweet = (e) => {
+  const handleSubmitTweet = async (e) => {
     e.preventDefault();
-    // Add your logic to handle the tweet submission here
-    axios
-      .post(postAPI, { content: tweet, userId: userId, userName: userName })
-      .then((resp) => {
-        console.log(resp);
-        parent.location.reload(); // refresh the page
-      })
-      .catch((err) => {
-        console.log("erro when post a twit");
-      });
+    const filteredContent = filterTweet(tweet);
+    const tabooWordCount = tabooWordList.reduce((count, word) => {
+      const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
+      return count + (filteredContent.match(regex) || []).length;
+    }, 0);
+
+    if (tabooWordCount <= 2) {
+      try {
+        await axios.post(postAPI, { content: filteredContent, userId, userName });
+        console.log("Tweet posted successfully");
+        // Optionally update state or trigger re-render here
+      } catch (error) {
+        console.error("Error when posting a tweet", error);
+      }
+    } else {
+      console.log("Tweet blocked due to excessive taboo words.");
+      // Optionally show a warning to the user
+      alert("Your message contains excessive taboo words. Please review your message.");
+    }
   };
 
   return (
