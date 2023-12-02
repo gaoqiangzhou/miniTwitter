@@ -4,6 +4,7 @@ import { CiRead } from "react-icons/ci";
 import { FcLike, FcDislike } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { usePost} from "../contexts/PostContext"
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import axios from "axios";
 import CommentList from "./commentlist";
@@ -15,141 +16,13 @@ const TwitterBox = (props) => {
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
   const [newTip, setNewTip] = useState(0);
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, subscribe, unSubscribe, tip } = useAuth();
+  const { like, dislike, read} = usePost();
   const userId = user?._id;
-  const SUBAPI = "http://localhost:3000/subscribe";
-  const LIKAPI = `http://localhost:3000/post/${props.postId}/like`;
-  const DISLIKAPI = `http://localhost:3000/post/${props.postId}/dislike`;
-  const READ_API = `http://localhost:3000/post/${props.postId}/reads`;
   const [comments, setcomments] = useState(props.initcomments || []);
 
-  const [likes, setLikes] = useState(props.initialLikes || []);
-  const [dislikes, setDisLikes] = useState(props.initialDislikes || []);
-  const [reads, setReads] = useState(props.initReads);
-
-  const addReads = () => {
-    //will be called when a user comment, like, dislike
-    axios.post(READ_API, {userId: user._id})
-    .then((res) => {
-      if(reads.reduce(
-        (acc, cur) => acc && (cur != user._id),
-        true
-      )) setReads([...reads, user._id])
-    })
-    .catch(err => console.log(err))
-  }
-
-  const subscribe = () => {
-    axios
-      .post(SUBAPI, { followId: props.userId, followerId: userId })
-      .then((res) => {
-        if (res.data.status === "FAILED") throw new Error(res.data.message);
-        //update user state and localstorage after succefully sub
-        const newUserState = {
-          ...user,
-          following: [
-            ...user.following,
-            { _id: props.userId, name: props.displayName },
-          ],
-        };
-        localStorage.setItem("user", JSON.stringify(newUserState));
-        updateUser(newUserState);
-      })
-      .catch((err) => console.log(err));
-      addReads();
-  };
-  const unSubscribe = () => {
-    axios
-      .put(SUBAPI, { followId: props.userId, followerId: userId })
-      .then((res) => {
-        if (res.data.status === "FAILED") throw new Error(res.data.message);
-        //update user state and localstorage after succefully unsub
-        const newUserState = {
-          ...user,
-          following: user.following.filter((e) => e._id !== props.userId),
-        };
-        localStorage.setItem("user", JSON.stringify(newUserState));
-        updateUser(newUserState);
-      })
-      .catch((err) => console.log(err));
-      addReads();
-  };
-
-  const handlelike = () => {
-    addReads();
-    //if already liked?
-    if(likes.reduce(
-      (acc, cur) => acc || (cur.user === user._id),
-      false
-    ))
-    //cancel like
-    {
-      axios.put(LIKAPI, {userId: user._id})
-      .then((res) => {
-        setLikes(likes.filter((ea) => ea.user != user._id));
-      })
-      .catch((err) => console.log(err))
-    }
-    else
-    {
-      //if disliked?
-      if(dislikes.reduce(
-        (acc, cur) => acc || (cur.user === user._id),
-        false
-      ))
-      {
-        //cancel dislike
-        axios.put(DISLIKAPI, {userId: user._id})
-        .then((res) => {
-          setDisLikes(dislikes.filter((ea) => ea.user != user._id));
-        }).catch((err) => console.log(err))
-      }
-      //add like
-      axios.post(LIKAPI, {userId: user._id})
-      .then((res) => {
-        setLikes([...likes, {user: user._id}]);
-      }).catch((err) => console.log(err))
-    }
-  };
-
-  const handledislike = () => {
-    addReads();
-    //if already disliked?
-    if(dislikes.reduce(
-      (acc, cur) => acc || (cur.user === user._id),
-      false
-    ))
-    //cancel dislike
-    {
-      axios.put(DISLIKAPI, {userId: user._id})
-      .then((res) => {
-        setDisLikes(dislikes.filter((ea) => ea.user != user._id));
-      })
-      .catch((err) => console.log(err))
-    }
-    else
-    {
-      //if liked?
-      if(likes.reduce(
-        (acc, cur) => acc || (cur.user === user._id),
-        false
-      ))
-      {
-        //cancel like
-        axios.put(LIKAPI, {userId: user._id})
-        .then((res) => {
-          setLikes(likes.filter((ea) => ea.user != user._id));
-        }).catch((err) => console.log(err))
-      }
-      //add dislike
-      axios.post(DISLIKAPI, {userId: user._id})
-      .then((res) => {
-        setDisLikes([...dislikes, {user: user._id}]);
-      }).catch((err) => console.log(err))
-    }
-  };
   const handleCommentChange = (e) => {
-    addReads();
+    read(user._id, props.postId)
     setNewComment(e.target.value);
   };
 
@@ -172,7 +45,7 @@ const TwitterBox = (props) => {
       });
   };
   const toProfile = () => {
-    addReads();
+    read(user._id, props.postId);
     navigate("/profile/" + props.userId);
   };
   const handleDeleteComment = (commentId) => {
@@ -193,28 +66,14 @@ const TwitterBox = (props) => {
   };
 
   const handleTipSubmit = (e) => {
-    addReads();
+    read(user._id, props.postId)
     e.preventDefault();
     //update the comment to DB
     const parsedTipAmount = parseFloat(newTip);
-    const API_URL = `http://localhost:3000/user/send-tip`;
 
-    axios
-      .put(API_URL, {
-        senderId: userId,
-        receiverId: props.userId,
-        tipAmount: parsedTipAmount,
-      })
-      .then((resp) => {
-        // if (resp.data.status === "FAILED") throw new Error(resp.data.message);
-
-        console.log(resp);
-        setNewTip(0);
-        parent.location.reload(); // refresh the page
-      })
-      .catch((err) => {
-        console.log("erro when send a tips");
-      });
+    tip(user._id, props.userId, parsedTipAmount)
+    setNewTip(0);
+    //parent.location.reload(); // refresh the page
   };
   return (
     <div
@@ -228,26 +87,26 @@ const TwitterBox = (props) => {
         </span>
         {!user ? (
           <button
-            onClick={subscribe}
+            onClick={() => {subscribe(props.userId, props.displayName, user._id)}}
             className="mr-2 text-blue-500 hover:text-blue-700"
           >
             <SlUserFollow />
           </button>
         ) : (
           userId !== props.userId &&
-          (user.following.reduce(
+          (user.following?.reduce(
             (acc, cur) => acc || cur._id === props.userId,
             false
           ) ? (
             <button
-              onClick={unSubscribe}
+              onClick={() => {unSubscribe(props.userId, user._id)}}
               className="mr-2 text-blue-500 hover:text-blue-700"
             >
               <SlUserFollowing />
             </button>
           ) : (
             <button
-              onClick={subscribe}
+              onClick={() => {subscribe(props.userId, props.displayName, user._id)}}
               className="mr-2 text-blue-500 hover:text-blue-700"
             >
               <SlUserFollow />
@@ -258,19 +117,19 @@ const TwitterBox = (props) => {
       <div className="mt-2">{props.content}</div>
       <div className="mt-4 flex">
         <button
-          onClick={handlelike}
+          onClick={() => {like(user._id, props.postId); read(user._id, props.postId)}}
           className={"mr-2 text-blue-500 hover:text-blue-700"}
         >
-          <FcLike /> Like <span className="badge">{likes.length}</span>
+          <FcLike /> Like <span className="badge">{props.initialLikes.length}</span>
         </button>
         <button
-          onClick={handledislike}
+          onClick={() => {dislike(user._id, props.postId); read(user._id, props.postId)}}
           className={"mr-2 text-blue-500 hover:text-blue-700"}
         >
-          <FcDislike /> Dislike <span className="badge">{dislikes.length}</span>
+          <FcDislike /> Dislike <span className="badge">{props.initialDislikes.length}</span>
         </button>
         <button
-          onClick={() => {setShowComments(!showComments); addReads();}}
+          onClick={() => {setShowComments(!showComments); read(user._id, props.postId);}}
           className="mr-2 text-blue-500 hover:text-blue-700 "
         >
           <FaCommentAlt /> Comment({comments.length})
@@ -323,7 +182,7 @@ const TwitterBox = (props) => {
         <div
           className="mr-2 text-blue-500 hover:text-blue-700 "
         >
-          <CiRead  /> Reads({reads?.length})
+          <CiRead  /> Reads({props.initReads?.length})
         </div>
       </div>
     </div>

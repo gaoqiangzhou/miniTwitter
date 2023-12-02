@@ -22,11 +22,11 @@ router.post("/", async (req, res) => {
       userName,
     });
 
-    await newPost.save();
+    const doc = await newPost.save();
     res.json({
       status: "SUCCESS",
       message: "Post created successfully",
-      data: newPost,
+      data: doc,
     });
   } catch (error) {
     res.status(500).json({
@@ -38,7 +38,7 @@ router.post("/", async (req, res) => {
 });
 //get all posts
 router.get("/", async (req, res) => {
-  Post.find({})
+  Post.find({}).sort({ createdAt: 'desc'})
     .then((posts) => {
       res.send(posts);
     })
