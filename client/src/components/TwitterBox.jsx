@@ -4,6 +4,7 @@ import { CiRead } from "react-icons/ci";
 import { FcLike, FcDislike } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { usePost} from "../contexts/PostContext"
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import axios from "axios";
 import CommentList from "./commentlist";
@@ -16,6 +17,7 @@ const TwitterBox = (props) => {
   const [newComment, setNewComment] = useState("");
   const [newTip, setNewTip] = useState(0);
   const { user, updateUser } = useAuth();
+  const { like, dislike} = usePost();
   const userId = user?._id;
   const SUBAPI = "http://localhost:3000/subscribe";
   const LIKAPI = `http://localhost:3000/post/${props.postId}/like`;
@@ -75,79 +77,6 @@ const TwitterBox = (props) => {
       addReads();
   };
 
-  const handlelike = () => {
-    addReads();
-    //if already liked?
-    if(likes.reduce(
-      (acc, cur) => acc || (cur.user === user._id),
-      false
-    ))
-    //cancel like
-    {
-      axios.put(LIKAPI, {userId: user._id})
-      .then((res) => {
-        setLikes(likes.filter((ea) => ea.user != user._id));
-      })
-      .catch((err) => console.log(err))
-    }
-    else
-    {
-      //if disliked?
-      if(dislikes.reduce(
-        (acc, cur) => acc || (cur.user === user._id),
-        false
-      ))
-      {
-        //cancel dislike
-        axios.put(DISLIKAPI, {userId: user._id})
-        .then((res) => {
-          setDisLikes(dislikes.filter((ea) => ea.user != user._id));
-        }).catch((err) => console.log(err))
-      }
-      //add like
-      axios.post(LIKAPI, {userId: user._id})
-      .then((res) => {
-        setLikes([...likes, {user: user._id}]);
-      }).catch((err) => console.log(err))
-    }
-  };
-
-  const handledislike = () => {
-    addReads();
-    //if already disliked?
-    if(dislikes.reduce(
-      (acc, cur) => acc || (cur.user === user._id),
-      false
-    ))
-    //cancel dislike
-    {
-      axios.put(DISLIKAPI, {userId: user._id})
-      .then((res) => {
-        setDisLikes(dislikes.filter((ea) => ea.user != user._id));
-      })
-      .catch((err) => console.log(err))
-    }
-    else
-    {
-      //if liked?
-      if(likes.reduce(
-        (acc, cur) => acc || (cur.user === user._id),
-        false
-      ))
-      {
-        //cancel like
-        axios.put(LIKAPI, {userId: user._id})
-        .then((res) => {
-          setLikes(likes.filter((ea) => ea.user != user._id));
-        }).catch((err) => console.log(err))
-      }
-      //add dislike
-      axios.post(DISLIKAPI, {userId: user._id})
-      .then((res) => {
-        setDisLikes([...dislikes, {user: user._id}]);
-      }).catch((err) => console.log(err))
-    }
-  };
   const handleCommentChange = (e) => {
     addReads();
     setNewComment(e.target.value);
@@ -258,16 +187,16 @@ const TwitterBox = (props) => {
       <div className="mt-2">{props.content}</div>
       <div className="mt-4 flex">
         <button
-          onClick={handlelike}
+          onClick={() => like(user._id, props.postId)}
           className={"mr-2 text-blue-500 hover:text-blue-700"}
         >
-          <FcLike /> Like <span className="badge">{likes.length}</span>
+          <FcLike /> Like <span className="badge">{props.initialLikes.length}</span>
         </button>
         <button
-          onClick={handledislike}
+          onClick={() => dislike(user._id, props.postId)}
           className={"mr-2 text-blue-500 hover:text-blue-700"}
         >
-          <FcDislike /> Dislike <span className="badge">{dislikes.length}</span>
+          <FcDislike /> Dislike <span className="badge">{props.initialDislikes.length}</span>
         </button>
         <button
           onClick={() => {setShowComments(!showComments); addReads();}}

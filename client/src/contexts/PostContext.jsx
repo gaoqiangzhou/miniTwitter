@@ -8,7 +8,7 @@ export function usePost()
 }
 export function PostContextProvider({children})
 {
-    const [posts, setPosts] = useState(null);
+    const [posts, setPosts] = useState([]);
     const postAPI = "http://localhost:3000/post";
     const LIKAPI = (postId) =>  `http://localhost:3000/post/${postId}/like`;
     const DISLIKAPI = (postId) => `http://localhost:3000/post/${postId}/dislike`;
@@ -16,23 +16,29 @@ export function PostContextProvider({children})
         setPosts(newPosts);
     }
     const getPostById = (postId) => {
-        return posts.filter((ea) => ea._id === postId)[0]
+        return posts?.filter((ea) => ea._id === postId)[0]
     }
-    const like = (postUserId, userId, postId) => {
+    const like = (userId, postId) => {
         const post = getPostById(postId);
-        console.log(post);
-        const [likes, setLikes] = useState(post.likes || []);
-        const [dislikes, setDisLikes] = useState(post.dislikes || []);
+        const likes = post?.likes;
+        const dislikes = post?.dislikes;
         //if already liked?
         if(likes.reduce(
-            (acc, cur) => acc || (userId === postUserId),
+            (acc, cur) => acc || (userId === cur.user),
             false
         ))
         //cancel like
         {
             axios.put(LIKAPI(postId), {userId: userId})
             .then((res) => {
-            setLikes(likes.filter((ea) => ea.user != userId));
+                setPosts(posts
+                    .map((ea) => (ea._id === post._id)? 
+                    ({
+                        ...ea,
+                        likes: likes.filter((ea1) => ea1.user != userId)
+                    }) 
+                    :
+                    (ea)))
             })
             .catch((err) => console.log(err))
         }
@@ -40,47 +46,60 @@ export function PostContextProvider({children})
         {
           //if disliked?
           if(dislikes.reduce(
-            (acc, cur) => acc || (userId === postUserId),
+            (acc, cur) => acc || (userId === cur.user),
             false
           ))
           {
             //cancel dislike
             axios.put(DISLIKAPI(postId), {userId: userId})
             .then((res) => {
-              setDisLikes(dislikes.filter((ea) => ea.user != userId));
+                setPosts((prev) =>
+                    prev
+                    .map((ea) => (ea._id === post._id)? 
+                    ({
+                        ...ea,
+                        dislikes: dislikes.filter((ea1) => ea1.user != userId)
+                    }) 
+                    :
+                    (ea)))
             }).catch((err) => console.log(err))
           }
           //add like
           axios.post(LIKAPI(postId), {userId: userId})
           .then((res) => {
-            setLikes([...likes, {user: userId}]);
+            setPosts((prev) => 
+                prev
+                .map((ea) => (ea._id === post._id)? 
+                ({
+                    ...ea,
+                    likes: [...likes, {user: userId}]
+                }) 
+                :
+                (ea)))
           }).catch((err) => console.log(err))
         }
-        //update post
-        const newPost = 
-        {
-            ...post,
-            likes: likes,
-            dislikes: dislikes
-        }
-        setPosts(posts
-                .map((ea) => (ea._id === newPost._id)? newPost : ea))
     }
-    const dislike = (postUserId, userId, postId) => {
+    const dislike = (userId, postId) => {
         const post = getPostById(postId);
-        console.log(post);
-        const [likes, setLikes] = useState(post.likes || []);
-        const [dislikes, setDisLikes] = useState(post.dislikes || []);
+        const likes = post?.likes;
+        const dislikes = post?.dislikes;
         //if already disliked?
         if(dislikes.reduce(
-            (acc, cur) => acc || (userId === postUserId),
+            (acc, cur) => acc || (userId === cur.user),
             false
         ))
         //cancel dislike
         {
             axios.put(DISLIKAPI(postId), {userId: userId})
             .then((res) => {
-            setLikes(dislikes.filter((ea) => ea.user != userId));
+                setPosts(posts
+                    .map((ea) => (ea._id === postId)? 
+                    ({
+                        ...ea,
+                        dislikes: dislikes.filter((ea1) => ea1.user != userId)
+                    }) 
+                    :
+                    (ea)))
             })
             .catch((err) => console.log(err))
         }
@@ -88,31 +107,38 @@ export function PostContextProvider({children})
         {
           //if liked?
           if(likes.reduce(
-            (acc, cur) => acc || (userId === postUserId),
+            (acc, cur) => acc || (userId === cur.user),
             false
           ))
           {
             //cancel like
             axios.put(LIKAPI(postId), {userId: userId})
             .then((res) => {
-                setLikes(dislikes.filter((ea) => ea.user != userId));
+                setPosts((prev) => 
+                    prev
+                    .map((ea) => (ea._id === postId)? 
+                    ({
+                        ...ea,
+                        likes: likes.filter((ea1) => ea1.user != userId)
+                    }) 
+                    :
+                    (ea)))
             }).catch((err) => console.log(err))
           }
           //add dislike
           axios.post(DISLIKAPI(postId), {userId: userId})
           .then((res) => {
-            setDisLikes([...likes, {user: userId}]);
+            setPosts((prev) =>
+                prev
+                .map((ea) => (ea._id === postId)? 
+                ({
+                    ...ea,
+                    dislikes: [...dislikes, {user: userId}]
+                }) 
+                :
+                (ea)))
           }).catch((err) => console.log(err))
         }
-        //update post
-        const newPost = 
-        {
-            ...post,
-            likes: likes,
-            dislikes: dislikes
-        }
-        setPosts(posts
-                .map((ea) => (ea._id === newPost._id)? newPost : ea))
     }
     const values = {
         posts: posts,
