@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { BsFillImageFill } from "react-icons/bs";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
+import { usePost } from "../contexts/PostContext";
 
 const TwitterPostBox = () => {
   const [tweet, setTweet] = useState("");
   const { user } = useAuth();
+  const {posts, updatePosts} = usePost();
   const postAPI = "http://localhost:3000/post";
   const userName = user?.name;
   const userId = user?._id;
@@ -17,13 +19,11 @@ const TwitterPostBox = () => {
     let filterCount = 0;
     tabooWordList.forEach((word) => {
       const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
-      console.log(regex);
       if(regex.exec(filteredTweet)){
         filterCount +=1;
       }
       filteredTweet = filteredTweet.replace(regex, (match) => '*'.repeat(match.length));
     });
-    console.log("Filtered Tweet:", filteredTweet);
     return [filterCount,filteredTweet];
   };
 
@@ -36,9 +36,6 @@ const TwitterPostBox = () => {
     const filterResult = filterTweet(tweet);
     const filteredContent = filterResult[1];
     let tabooWordCount = filterResult[0];
-    
-
-  console.log("Taboo Word Count:", tabooWordCount);
 
 
     if (tabooWordCount >= 3) {
@@ -49,7 +46,10 @@ const TwitterPostBox = () => {
       try {
         axios.post(postAPI, { content: filteredContent, userId, userName })
         .then((res)=>{
-          console.log(res);
+          const data = res.data;
+          if(data.status != "SUCCESS") throw new Error('error');
+          const newPost = data.data;
+          updatePosts([newPost, ...posts]);
           //parent.location.reload();
         })
   

@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TwitterBox from "./TwitterBox";
+import { usePost } from "../contexts/PostContext";
 
 const TwitterList = () => {
-  const postAPI = "http://localhost:3000/post";
-  const [posts, setPosts] = useState([]);
+  const {posts, updatePosts} = usePost();
   //get all posts
-  useEffect(() => {
-    axios
-      .get(postAPI)
-      .then((res) => {
-        setPosts(res.data);
-      })
-      .catch((err) => {
-        console.log("failed to get all posts");
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get(postAPI)
+  //     .then((res) => {
+  //       setPosts(res.data);
+  //     })
+  //     .catch((err) => {
+  //       console.log("failed to get all posts");
+  //     });
+  // }, []);
   return (
     <div className="flex flex-col gap-y-1">
         
-      {posts.map((post) => 
+      {posts?.map((post) => 
       <div key = {post._id}>
         <TwitterBox 
         displayName={post.userName} 
