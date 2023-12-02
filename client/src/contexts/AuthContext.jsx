@@ -11,6 +11,7 @@ export function AuthContextProvider({children}){
     const APILOGIN = "http://localhost:3000/user/login";
     const API_USER = (id) => `http://localhost:3000/user/profile/${id}`;
     const SUBAPI = "http://localhost:3000/subscribe";
+    const TIP_API = "http://localhost:3000/user/send-tip"
 
     const [user, setUser] = useState(null);
     const [isLoading, setIsloading] = useState(null);
@@ -101,6 +102,22 @@ export function AuthContextProvider({children}){
              })
              .catch((err) => console.log(err));
     }
+    const tip = (senderId, reveiverId, tipAmount) => {
+        axios.put(TIP_API, {
+            senderId: senderId,
+            receiverId: reveiverId,
+            tipAmount: tipAmount,
+        })
+        .then((res) => {
+            const newUserState = {
+                ...user,
+                balance: parseFloat(user.balance) - tipAmount
+            }
+            localStorage.setItem("user", JSON.stringify(newUserState));
+            setUser(newUserState);
+        })
+        .catch((err) => console.log(err));
+    }
     
     const values = {
         user: user,
@@ -110,6 +127,7 @@ export function AuthContextProvider({children}){
         login: login,
         subscribe: subscribe,
         unSubscribe: unSubscribe,
+        tip: tip,
         isLoading: isLoading
     }
     //keep login 

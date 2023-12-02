@@ -16,7 +16,7 @@ const TwitterBox = (props) => {
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
   const [newTip, setNewTip] = useState(0);
-  const { user, updateUser, subscribe, unSubscribe } = useAuth();
+  const { user, updateUser, subscribe, unSubscribe, tip } = useAuth();
   const { like, dislike, read} = usePost();
   const userId = user?._id;
   const [comments, setcomments] = useState(props.initcomments || []);
@@ -66,27 +66,14 @@ const TwitterBox = (props) => {
   };
 
   const handleTipSubmit = (e) => {
+    read(user._id, props.postId)
     e.preventDefault();
     //update the comment to DB
     const parsedTipAmount = parseFloat(newTip);
-    const API_URL = `http://localhost:3000/user/send-tip`;
 
-    axios
-      .put(API_URL, {
-        senderId: userId,
-        receiverId: props.userId,
-        tipAmount: parsedTipAmount,
-      })
-      .then((resp) => {
-        // if (resp.data.status === "FAILED") throw new Error(resp.data.message);
-
-        console.log(resp);
-        setNewTip(0);
-        parent.location.reload(); // refresh the page
-      })
-      .catch((err) => {
-        console.log("erro when send a tips");
-      });
+    tip(user._id, props.userId, parsedTipAmount)
+    setNewTip(0);
+    //parent.location.reload(); // refresh the page
   };
   return (
     <div
