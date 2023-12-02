@@ -94,7 +94,7 @@ export function AuthContextProvider({children}){
              .then((res) => {
                 const newUserState = {
                     ...user,
-                    following: user.following.filter((e) => e._id !== followerId),
+                    following: user.following.filter((e) => e._id !== followId),
                   };
                   localStorage.setItem("user", JSON.stringify(newUserState));
                   setUser(newUserState);

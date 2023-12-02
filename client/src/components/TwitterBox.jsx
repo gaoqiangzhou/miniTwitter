@@ -16,48 +16,10 @@ const TwitterBox = (props) => {
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
   const [newTip, setNewTip] = useState(0);
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, subscribe, unSubscribe } = useAuth();
   const { like, dislike, read} = usePost();
   const userId = user?._id;
-  const SUBAPI = "http://localhost:3000/subscribe";
-  const READ_API = `http://localhost:3000/post/${props.postId}/reads`;
   const [comments, setcomments] = useState(props.initcomments || []);
-
-  const subscribe = () => {
-    axios
-      .post(SUBAPI, { followId: props.userId, followerId: userId })
-      .then((res) => {
-        if (res.data.status === "FAILED") throw new Error(res.data.message);
-        //update user state and localstorage after succefully sub
-        const newUserState = {
-          ...user,
-          following: [
-            ...user.following,
-            { _id: props.userId, name: props.displayName },
-          ],
-        };
-        localStorage.setItem("user", JSON.stringify(newUserState));
-        updateUser(newUserState);
-      })
-      .catch((err) => console.log(err));
-      addReads();
-  };
-  const unSubscribe = () => {
-    axios
-      .put(SUBAPI, { followId: props.userId, followerId: userId })
-      .then((res) => {
-        if (res.data.status === "FAILED") throw new Error(res.data.message);
-        //update user state and localstorage after succefully unsub
-        const newUserState = {
-          ...user,
-          following: user.following.filter((e) => e._id !== props.userId),
-        };
-        localStorage.setItem("user", JSON.stringify(newUserState));
-        updateUser(newUserState);
-      })
-      .catch((err) => console.log(err));
-      addReads();
-  };
 
   const handleCommentChange = (e) => {
     read(user._id, props.postId)
@@ -138,26 +100,26 @@ const TwitterBox = (props) => {
         </span>
         {!user ? (
           <button
-            onClick={subscribe}
+            onClick={() => {subscribe(props.userId, props.displayName, user._id)}}
             className="mr-2 text-blue-500 hover:text-blue-700"
           >
             <SlUserFollow />
           </button>
         ) : (
           userId !== props.userId &&
-          (user.following.reduce(
+          (user.following?.reduce(
             (acc, cur) => acc || cur._id === props.userId,
             false
           ) ? (
             <button
-              onClick={unSubscribe}
+              onClick={() => {unSubscribe(props.userId, user._id)}}
               className="mr-2 text-blue-500 hover:text-blue-700"
             >
               <SlUserFollowing />
             </button>
           ) : (
             <button
-              onClick={subscribe}
+              onClick={() => {subscribe(props.userId, props.displayName, user._id)}}
               className="mr-2 text-blue-500 hover:text-blue-700"
             >
               <SlUserFollow />
@@ -233,7 +195,7 @@ const TwitterBox = (props) => {
         <div
           className="mr-2 text-blue-500 hover:text-blue-700 "
         >
-          <CiRead  /> Reads({props.initReads.length})
+          <CiRead  /> Reads({props.initReads?.length})
         </div>
       </div>
     </div>
