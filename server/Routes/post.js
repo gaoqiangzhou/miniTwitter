@@ -282,65 +282,16 @@ router.put("/:postId/dislike", async (req, res) => {
     });
   }
 })
-// Handle tips a post
-router.post("/:postId/tips", async (req, res) => {
-  const { user: userId, amount } = req.body;
-  const postId = req.params.postId;
-
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: "FAILED", message: "User not found" });
-    }
-
-    const post = await Post.findById(postId);
-    if (!post) {
-      return res
-        .status(404)
-        .json({ status: "FAILED", message: "Post not found" });
-    }
-
-    const newtips = {
-      user: userId,
-      amount,
-    };
-
-    post.tips.push(newtips);
-    await post.save();
-    res.json({
-      status: "SUCCESS",
-      message: "tips added successfully",
-      data: newtips,
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "FAILED",
-      message: "Error occurred while adding the tips",
-      error: error.message,
-    });
-  }
-});
 //// Handle complain a post
 router.post("/:postId/complain", async (req, res) => {
-  const { user: userId, reason } = req.body;
+  const { userId, reason } = req.body;
   const postId = req.params.postId;
 
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ status: "FAILED", message: "User not found" });
-    }
 
     const post = await Post.findById(postId);
-    if (!post) {
-      return res
-        .status(404)
-        .json({ status: "FAILED", message: "Post not found" });
-    }
+    const postUserId = post.userId;
+    if(postUserId) await User.findOneAndUpdate({_id: postUserId}, {$inc: {warns: 1}});
 
     const newcomplain = {
       user: userId,

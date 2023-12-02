@@ -68,8 +68,7 @@ const postSchema = new mongoose.Schema(
     complaints: [
       {
         user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User", // Reference to the User model for the user who complained
+          type: String,
           required: true,
         },
         reason: {
