@@ -9,23 +9,54 @@ const TwitterPostBox = () => {
   const postAPI = "http://localhost:3000/post";
   const userName = user?.name;
   const userId = user?._id;
+  const tabooWordList = ["fuck", "asshole","damn"]; // Replace with your actual taboo words
+
+
+  const filterTweet = (tweet) => {
+    let filteredTweet = tweet;
+    let filterCount = 0;
+    tabooWordList.forEach((word) => {
+      const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
+      console.log(regex);
+      if(regex.exec(filteredTweet)){
+        filterCount +=1;
+      }
+      filteredTweet = filteredTweet.replace(regex, (match) => '*'.repeat(match.length));
+    });
+    console.log("Filtered Tweet:", filteredTweet);
+    return [filterCount,filteredTweet];
+  };
 
   const handleTweetChange = (e) => {
     setTweet(e.target.value);
   };
 
-  const handleSubmitTweet = (e) => {
+  const handleSubmitTweet =  (e) => {
     e.preventDefault();
-    // Add your logic to handle the tweet submission here
-    axios
-      .post(postAPI, { content: tweet, userId: userId, userName: userName })
-      .then((resp) => {
-        console.log(resp);
-        parent.location.reload(); // refresh the page
-      })
-      .catch((err) => {
-        console.log("erro when post a twit");
-      });
+    const filterResult = filterTweet(tweet);
+    const filteredContent = filterResult[1];
+    let tabooWordCount = filterResult[0];
+    
+
+  console.log("Taboo Word Count:", tabooWordCount);
+
+
+    if (tabooWordCount >= 3) {
+      console.log("Tweet blocked due to excessive taboo words.");
+      // Optionally show a warning to the user
+      alert("Your message contains three or more taboo words. Please review your message.");
+    } else {
+      try {
+        axios.post(postAPI, { content: filteredContent, userId, userName })
+        .then((res)=>{
+          console.log(res);
+          //parent.location.reload();
+        })
+  
+      } catch (error) {
+        console.error("Error when posting a tweet", error);
+      }
+    }
   };
 
   return (
