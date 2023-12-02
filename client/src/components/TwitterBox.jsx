@@ -20,13 +20,8 @@ const TwitterBox = (props) => {
   const { like, dislike} = usePost();
   const userId = user?._id;
   const SUBAPI = "http://localhost:3000/subscribe";
-  const LIKAPI = `http://localhost:3000/post/${props.postId}/like`;
-  const DISLIKAPI = `http://localhost:3000/post/${props.postId}/dislike`;
   const READ_API = `http://localhost:3000/post/${props.postId}/reads`;
   const [comments, setcomments] = useState(props.initcomments || []);
-
-  const [likes, setLikes] = useState(props.initialLikes || []);
-  const [dislikes, setDisLikes] = useState(props.initialDislikes || []);
   const [reads, setReads] = useState(props.initReads);
 
   const addReads = () => {
@@ -40,7 +35,6 @@ const TwitterBox = (props) => {
     })
     .catch(err => console.log(err))
   }
-
   const subscribe = () => {
     axios
       .post(SUBAPI, { followId: props.userId, followerId: userId })

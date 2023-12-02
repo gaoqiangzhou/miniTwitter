@@ -12,11 +12,33 @@ export function PostContextProvider({children})
     const postAPI = "http://localhost:3000/post";
     const LIKAPI = (postId) =>  `http://localhost:3000/post/${postId}/like`;
     const DISLIKAPI = (postId) => `http://localhost:3000/post/${postId}/dislike`;
+    const READ_API = (postId) =>  `http://localhost:3000/post/${postId}/reads`;
     const updatePosts = (newPosts) => {
         setPosts(newPosts);
     }
     const getPostById = (postId) => {
         return posts?.filter((ea) => ea._id === postId)[0]
+    }
+    const read = (userId, postId) => {
+        const post = getPostById(postId);
+        const reads = post?.reads;
+        axios.post(READ_API(postId), {userId: userId})
+        .then((res) => {
+            if(reads.reduce(
+                (acc, cur) => acc && (cur != userId),
+                true
+            ))
+            {
+                setPosts(posts
+                    .map((ea) => (ea._id === post._id)? 
+                    ({
+                        ...ea,
+                        reads: [...reads, userId]
+                    }) 
+                    :
+                    (ea)))
+            }   
+        })
     }
     const like = (userId, postId) => {
         const post = getPostById(postId);
@@ -144,7 +166,8 @@ export function PostContextProvider({children})
         posts: posts,
         updatePosts: updatePosts,
         like: like,
-        dislike: dislike
+        dislike: dislike,
+        read: read
     }
     useEffect(() => {
         axios.get(postAPI)
