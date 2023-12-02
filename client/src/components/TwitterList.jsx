@@ -5,17 +5,6 @@ import { usePost } from "../contexts/PostContext";
 
 const TwitterList = () => {
   const {posts, updatePosts} = usePost();
-  //get all posts
-  // useEffect(() => {
-  //   axios
-  //     .get(postAPI)
-  //     .then((res) => {
-  //       setPosts(res.data);
-  //     })
-  //     .catch((err) => {
-  //       console.log("failed to get all posts");
-  //     });
-  // }, []);
   return (
     <div className="flex flex-col gap-y-1">
         
