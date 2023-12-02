@@ -9,7 +9,8 @@ export function useAuth(){
 export function AuthContextProvider({children}){
     const APISIGNUP = "http://localhost:3000/user/register";
     const APILOGIN = "http://localhost:3000/user/login";
-    const API_USER = (id) => `http://localhost:3000/user/profile/${id}`
+    const API_USER = (id) => `http://localhost:3000/user/profile/${id}`;
+    const SUBAPI = "http://localhost:3000/subscribe";
 
     const [user, setUser] = useState(null);
     const [isLoading, setIsloading] = useState(null);
@@ -72,6 +73,34 @@ export function AuthContextProvider({children}){
     const updateUser = (newUser) => {
         setUser(newUser);
     }
+    const subscribe = (followId, followName, followerId) => {
+        axios.post(SUBAPI, { followId: followId, followerId: followerId })
+             .then((res) => {
+                if (res.data.status === "FAILED") throw new Error(res.data.message);
+                const newUserState = {
+                    ...user,
+                    following: [
+                      ...user.following,
+                      { _id: followId, name: followName },
+                    ],
+                  };
+                  localStorage.setItem("user", JSON.stringify(newUserState));
+                  setUser(newUserState);
+             })
+             .catch((err) => console.log(err));
+    }
+    const unSubscribe = (followId, followerId) => {
+        axios.put(SUBAPI, { followId: followId, followerId: followerId })
+             .then((res) => {
+                const newUserState = {
+                    ...user,
+                    following: user.following.filter((e) => e._id !== followerId),
+                  };
+                  localStorage.setItem("user", JSON.stringify(newUserState));
+                  setUser(newUserState);
+             })
+             .catch((err) => console.log(err));
+    }
     
     const values = {
         user: user,
@@ -79,6 +108,8 @@ export function AuthContextProvider({children}){
         signup: signup,
         logout: logout,
         login: login,
+        subscribe: subscribe,
+        unSubscribe: unSubscribe,
         isLoading: isLoading
     }
     //keep login 
