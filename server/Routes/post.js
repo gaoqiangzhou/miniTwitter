@@ -289,21 +289,12 @@ router.post("/:postId/complain", async (req, res) => {
 
   try {
 
-    const post = await Post.findById(postId);
+    const post = await Post.findOneAndUpdate({_id: postId}, {$inc: {complaints: 1}});
     const postUserId = post.userId;
-    if(postUserId) await User.findOneAndUpdate({_id: postUserId}, {$inc: {warns: 1}});
-
-    const newcomplain = {
-      user: userId,
-      reason,
-    };
-
-    post.complaints.push(newcomplain);
-    await post.save();
+    if(postUserId) await User.findOneAndUpdate({_id: postUserId}, {$push: {warns: {userId: userId, reason: reason, postId: postId}}});
     res.json({
       status: "SUCCESS",
       message: "complain added successfully",
-      data: newcomplain,
     });
   } catch (error) {
     res.status(500).json({

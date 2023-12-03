@@ -184,6 +184,7 @@ router.get("/profile/:id", async (req, res) => {
             name: user.name,
             type: user.type,
             balance: user.account_balance,
+            warns: user.warns,
             followers: followerNameIds,
             followings: followingNameIds,
           };
@@ -197,6 +198,7 @@ router.get("/profile/:id", async (req, res) => {
             name: user.name,
             type: user.type,
             balance: user.account_balance,
+            warns: user.warns,
             followers: [],
             followings: [],
         };
