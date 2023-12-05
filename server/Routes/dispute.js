@@ -23,7 +23,24 @@ router.post("/:complaintId", async (req, res) => {
       error: error.message,
     });
   }
+})
+//get all unprocessed disputes
+router.get("/", async (req, res) => {
+  try{
+    const disputes = await DisputeMessage.find({approved: null})
+    res.json({
+      status: "SUCCESS",
+      message: "get all unprocessed disputes",
+      disputes: disputes
+    });
 
+  } catch (error) {
+    res.json({
+      status: "FAILED",
+      message: "Error occurred while send a dispute",
+      error: error.message,
+    });
+  }
 })
 
 module.exports = router;
