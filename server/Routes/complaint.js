@@ -16,6 +16,7 @@ router.post("/:postId", async (req, res) => {
         res.json({
             status: "SUCCESS",
             message: "Success to add the complain",
+            complain: newComplaint
         })
     } catch (error) {
     res.json({

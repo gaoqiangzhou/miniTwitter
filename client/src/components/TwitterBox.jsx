@@ -6,12 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { usePost} from "../contexts/PostContext"
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
+import AddComplain from "./AddComplain";
 import axios from "axios";
 import CommentList from "./commentlist";
 
 //if user id == postuser id -> nothing
 const TwitterBox = (props) => {
   const [showComments, setShowComments] = useState(false);
+  const [showAddComplaint, setShowAddComplaint] = useState(false);
   const [showTips, setshowtips] = useState(false);
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
@@ -182,9 +184,12 @@ const TwitterBox = (props) => {
         <div className="mr-2 text-blue-500 hover:text-blue-700 ">
           <CiRead  /> Reads({props.initReads?.length})
         </div>
-        <div className="mr-2 text-blue-500 hover:text-blue-700 ">
+        <div className="mr-2 text-blue-500 hover:text-blue-700 " onClick = {() => setShowAddComplaint((prev) => !prev)}>
           <CiWarning  /> complaints({props.complaints?.length})
         </div>
+        {
+          showAddComplaint && <AddComplain postId = {props.postId} setShowAddComplaint = {setShowAddComplaint}/>
+        }
       </div>
     </div>
   );
