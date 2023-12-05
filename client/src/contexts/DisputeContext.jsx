@@ -2,7 +2,7 @@ import React, {createContext, useState, useContext, useEffect } from 'react'
 import axios from "axios";
 
 const DisputeContext = createContext();
-export function useAuth(){
+export function useDispute(){
     return useContext(DisputeContext);
 }
 

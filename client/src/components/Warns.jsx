@@ -1,7 +1,9 @@
 import React from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useDispute } from "../contexts/DisputeContext"
 
 const Warns = () => {
+    const {sendDispute} = useDispute();
     const {user} = useAuth();
     const warns = user?.warns;
     if(warns.length === 0) return(
@@ -18,7 +20,7 @@ const Warns = () => {
                         <span className="self-center font-bold ">from {ea.by}</span>
                         <span className="self-center font-bold ">Reason: {ea.reason}</span>
                         <span className="self-center font-bold ">On{(ea.postId)? "Post: " + ea.postId : "Profile"}</span>
-                        <button className="text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white">Dispute</button>
+                        <button onClick = {() => sendDispute(ea._id, ea.to, "not true!")} className="text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white">Dispute</button>
                     </div>
                 )
             }
