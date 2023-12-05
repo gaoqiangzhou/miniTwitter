@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaHeart, FaCommentAlt, FaMoneyBillWaveAlt } from "react-icons/fa";
-import { CiRead } from "react-icons/ci";
+import { CiRead, CiWarning } from "react-icons/ci";
 import { FcLike, FcDislike } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -179,10 +179,11 @@ const TwitterBox = (props) => {
             </form>
           </div>
         )}
-        <div
-          className="mr-2 text-blue-500 hover:text-blue-700 "
-        >
+        <div className="mr-2 text-blue-500 hover:text-blue-700 ">
           <CiRead  /> Reads({props.initReads?.length})
+        </div>
+        <div className="mr-2 text-blue-500 hover:text-blue-700 ">
+          <CiWarning  /> complaints({props.complaints?.length})
         </div>
       </div>
     </div>

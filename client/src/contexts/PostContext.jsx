@@ -13,6 +13,7 @@ export function PostContextProvider({children})
     const LIKAPI = (postId) =>  `http://localhost:3000/post/${postId}/like`;
     const DISLIKAPI = (postId) => `http://localhost:3000/post/${postId}/dislike`;
     const READ_API = (postId) =>  `http://localhost:3000/post/${postId}/reads`;
+    const COMPLAIN_POST = (postId) => `http://localhost:3000/post/${postId}/complain`
     const updatePosts = (newPosts) => {
         setPosts(newPosts);
     }
@@ -162,12 +163,32 @@ export function PostContextProvider({children})
           }).catch((err) => console.log(err))
         }
     }
+    const complainPost = (userId, postId, reason) => {
+        const post = getPostById(postId);
+        const complaints = post?.complaints;
+        axios.post(COMPLAIN_POST(postId), {userId: userId, reason: reason})
+             .then((res) => {
+                if (res.data.status === "FAILED") throw new Error(res.data.message);
+                setPosts((prev) => {
+                    prev.map((ea) => (ea._id === postId)?
+                    (
+                        {
+                            ...ea,
+                            complaints: [...complaints, {by: userId, reason: reason}]
+                        }
+                    ):
+                    (ea))
+                })
+             })
+             .catch((err) => console.log(err));
+    }
     const values = {
         posts: posts,
         updatePosts: updatePosts,
         like: like,
         dislike: dislike,
-        read: read
+        read: read,
+        complainPost: complainPost
     }
     useEffect(() => {
         axios.get(postAPI)

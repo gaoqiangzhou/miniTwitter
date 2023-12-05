@@ -64,11 +64,6 @@ const postSchema = new mongoose.Schema(
         },
       },
     ],
-
-    complaints: {
-      type: Number,
-      default: 0,
-    },
     reads: [
       {
         type: mongoose.Schema.Types.ObjectId,

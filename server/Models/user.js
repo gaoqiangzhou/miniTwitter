@@ -20,20 +20,6 @@ const userSchema = new mongoose.Schema({
     type: Number,
     require: true,
   },
-  warns:[
-    {
-      userId:{
-        type: String,
-      },
-      reason:{
-        type:String,
-        required: true
-      },
-      postId:{
-        type:String,
-      },
-    }
-  ],
 });
 
 const User = new mongoose.model("User", userSchema);

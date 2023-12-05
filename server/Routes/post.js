@@ -282,28 +282,7 @@ router.put("/:postId/dislike", async (req, res) => {
     });
   }
 })
-//// Handle complain a post
-router.post("/:postId/complain", async (req, res) => {
-  const { userId, reason } = req.body;
-  const postId = req.params.postId;
 
-  try {
-
-    const post = await Post.findOneAndUpdate({_id: postId}, {$inc: {complaints: 1}});
-    const postUserId = post.userId;
-    if(postUserId) await User.findOneAndUpdate({_id: postUserId}, {$push: {warns: {userId: userId, reason: reason, postId: postId}}});
-    res.json({
-      status: "SUCCESS",
-      message: "complain added successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: "FAILED",
-      message: "Error occurred while adding the complain",
-      error: error.message,
-    });
-  }
-});
 //get posts by user
 router.get("/:userId", async (req, res) => {
   const userId = req.params.userId;
