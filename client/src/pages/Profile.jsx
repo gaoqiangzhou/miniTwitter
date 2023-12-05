@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import TwitterBox from "../components/TwitterBox";
 import Warns from "../components/Warns";
+import Disputes from "../components/Disputes";
 
 import axios from "axios";
 const Profile = () => {
@@ -58,7 +59,7 @@ const Profile = () => {
   return (
     <div className="flex flex-row bg-gray-300 antialiased">
 
-            {id === user._id && <Warns/>}
+            {id === user?._id && <Warns/>}
             <div className="bg-white shadow rounded-lg mx-auto w-1/2"> 
                 <div>
                     <h1 className="font-bold text-center text-3xl text-gray-900">{profileInfo?.name}</h1>
@@ -115,6 +116,7 @@ const Profile = () => {
                     </Tab.Group>
                 </div>
             </div>
+            {id === user?._id && <Disputes/>}
     </div>
   )
 }
