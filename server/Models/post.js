@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 const postSchema = new mongoose.Schema(
   {
     content: {
@@ -32,6 +33,12 @@ const postSchema = new mongoose.Schema(
           required: true,
         },
       },
+    ],
+    complaints:[
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Complaint"
+      }
     ],
     tips: [
       {
