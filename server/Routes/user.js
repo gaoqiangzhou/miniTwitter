@@ -5,6 +5,7 @@ const User = require("../Models/user");
 const Subscribe = require("../Models/subscribe");
 const Post = require("../Models/post");
 const Tip = require("../Models/tip");
+const Complaint = require("../Models/complaint")
 //password handle
 const bcrypt = require("bcrypt");
 //env variables
@@ -161,49 +162,40 @@ router.get("/profile/:id", async (req, res) => {
   const userId = req.params.id;
   try {
     const user = await User.findOne({ _id: userId });
+    const warns = user.warns;
     const subscribeInfo = await Subscribe.findOne({ userId: userId });
-    if(subscribeInfo)
-    {
-        const followingNameIds = (
-            await Promise.all(
-              subscribeInfo.following
-                .map((ea) => ea + "")
-                .map(async (e) => User.findOne({ _id: e }))
-            )
-          ).map((el) => ({ _id: el._id, name: el.name }));
-          const followerNameIds = (
-            await Promise.all(
-              subscribeInfo.follower
-                .map((ea) => ea + "")
-                .map(async (e) => User.findOne({ _id: e }))
-            )
-          ).map((el) => ({ _id: el._id, name: el.name }));
-      
-          const userInfo = {
-            _id: user._id,
-            name: user.name,
-            type: user.type,
-            balance: user.account_balance,
-            warns: user.warns,
-            followers: followerNameIds,
-            followings: followingNameIds,
-          };
-      
-          res.send(userInfo);
-    }
-    else
-    {
-        const userInfo = {
-            _id: user._id,
-            name: user.name,
-            type: user.type,
-            balance: user.account_balance,
-            warns: user.warns,
-            followers: [],
-            followings: [],
-        };
-        res.send(userInfo);
-    }
+
+    const followingNameIds = (
+        await Promise.all(
+          subscribeInfo.following
+            .map((ea) => ea + "")
+            .map(async (e) => User.findOne({ _id: e }))
+        )
+      ).map((el) => ({ _id: el._id, name: el.name }));
+      const followerNameIds = (
+        await Promise.all(
+          subscribeInfo.follower
+            .map((ea) => ea + "")
+            .map(async (e) => User.findOne({ _id: e }))
+        )
+      ).map((el) => ({ _id: el._id, name: el.name }));
+      const complaints =  await Promise.all(
+        warns
+        .map((ea) => ea + "")
+        .map(async (ea) => Complaint.findOne({_id: ea}))
+      )
+      const userInfo = {
+        _id: user._id,
+        name: user.name,
+        type: user.type,
+        balance: user.account_balance,
+        warns: complaints,
+        followers: followerNameIds,
+        followings: followingNameIds,
+      };
+  
+      res.send(userInfo);
+
   } catch (err) {
     res.json({
       status: "FAILED",
