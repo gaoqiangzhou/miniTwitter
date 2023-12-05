@@ -8,6 +8,14 @@ const complaintSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post",
     },
+    complaintType:{
+        type: String,
+        require: true,
+        enum: {
+            values: ["post", "profile", "balance"],
+            message: "{value} not supproted",
+          },
+    },
     reason:{
         type: String,
         required: true,

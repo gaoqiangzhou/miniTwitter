@@ -13,7 +13,7 @@ export function PostContextProvider({children})
     const LIKAPI = (postId) =>  `http://localhost:3000/post/${postId}/like`;
     const DISLIKAPI = (postId) => `http://localhost:3000/post/${postId}/dislike`;
     const READ_API = (postId) =>  `http://localhost:3000/post/${postId}/reads`;
-    const COMPLAIN_POST = (postId) => `http://localhost:3000/complain/${postId}`
+    const COMPLAIN_POST = "http://localhost:3000/complain/"
     const updatePosts = (newPosts) => {
         setPosts(newPosts);
     }
@@ -167,7 +167,7 @@ export function PostContextProvider({children})
         const post = getPostById(postId);
         const postUserId = post?.userId;
         const complaints = post?.complaints;
-        axios.post(COMPLAIN_POST(postId), {by: userId, reason: reason, to: postUserId})
+        axios.post(COMPLAIN_POST, {by: userId, reason: reason, to: postUserId, postId: postId, type: "post"})
              .then((res) => {
                 if (res.data.status === "FAILED") throw new Error(res.data.message);
                 setPosts((prev) => 
@@ -183,23 +183,23 @@ export function PostContextProvider({children})
              })
              .catch((err) => console.log(err));
     }
-    const cancelComplainPost = (postId, postUserId, complainId) => {
-        const post = getPostById(postId);
-        const complaints = post?.complaints;
-        axios.put(COMPLAIN_POST(postId), {postUserId: postUserId, complainId: complainId})
-        .then((res) => {
-            if (res.data.status === "FAILED") throw new Error(res.data.message);
-            setPosts((prev) => 
-                prev?.map((ea) => (ea._id === postId)) ?
-                ({
-                    ...ea,
-                    complaints: complaints.filter((ea) => ea._id !== complainId)
-                }) :
-                (ea)
-            )
-        })
-        .catch((err) => console.log(err));
-    }
+    // const cancelComplainPost = (postId, postUserId, complainId) => {
+    //     const post = getPostById(postId);
+    //     const complaints = post?.complaints;
+    //     axios.put(COMPLAIN_POST(postId), {postUserId: postUserId, complainId: complainId})
+    //     .then((res) => {
+    //         if (res.data.status === "FAILED") throw new Error(res.data.message);
+    //         setPosts((prev) => 
+    //             prev?.map((ea) => (ea._id === postId)) ?
+    //             ({
+    //                 ...ea,
+    //                 complaints: complaints.filter((ea) => ea._id !== complainId)
+    //             }) :
+    //             (ea)
+    //         )
+    //     })
+    //     .catch((err) => console.log(err));
+    // }
     const values = {
         posts: posts,
         updatePosts: updatePosts,
@@ -207,7 +207,7 @@ export function PostContextProvider({children})
         dislike: dislike,
         read: read,
         complainPost: complainPost,
-        cancelComplainPost: cancelComplainPost
+        // cancelComplainPost: cancelComplainPost
     }
     useEffect(() => {
         axios.get(postAPI)

@@ -7,6 +7,7 @@ const postRoute = require("./Routes/post");
 const subscribeRoute = require("./Routes/subscribe");
 const suggestRoute = require("./Routes/suggest");
 const complainRoute = require("./Routes/complaint")
+const disputeRoute = require("./Routes/dispute")
 
 app.use(cors());
 app.use(express.json());
@@ -15,6 +16,7 @@ app.use("/post", postRoute);
 app.use("/subscribe", subscribeRoute);
 app.use("/suggest", suggestRoute);
 app.use("/complain", complainRoute);
+app.use("/dispute", disputeRoute);
 
 mongoose
   .connect(
