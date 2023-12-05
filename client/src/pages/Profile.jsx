@@ -4,6 +4,7 @@ import { Tab } from '@headlessui/react'
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import TwitterBox from "../components/TwitterBox";
+import Warns from "../components/Warns";
 
 import axios from "axios";
 const Profile = () => {
@@ -55,8 +56,9 @@ const Profile = () => {
       .catch(err => console.log(err));
     }, [id])
   return (
-    <div className="bg-gray-300 antialiased">
-            <div className="bg-white relative shadow rounded-lg w-5/6 md:w-5/6  lg:w-4/6 xl:w-3/6 mx-auto"> 
+    <div className="flex flex-row bg-gray-300 antialiased">
+            <Warns/>
+            <div className="bg-white shadow rounded-lg mx-auto w-1/2"> 
                 <div>
                     <h1 className="font-bold text-center text-3xl text-gray-900">{profileInfo?.name}</h1>
                     <p className="text-center text-sm text-gray-400 font-medium">Balance:{profileInfo?.balance}</p>

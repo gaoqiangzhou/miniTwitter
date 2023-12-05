@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 const postSchema = new mongoose.Schema(
   {
     content: {
@@ -33,6 +34,12 @@ const postSchema = new mongoose.Schema(
         },
       },
     ],
+    complaints:[
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Complaint"
+      }
+    ],
     tips: [
       {
         user: {
@@ -60,20 +67,6 @@ const postSchema = new mongoose.Schema(
         user: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User", // Reference to the User model for the user who disliked
-          required: true,
-        },
-      },
-    ],
-
-    complaints: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User", // Reference to the User model for the user who complained
-          required: true,
-        },
-        reason: {
-          type: String,
           required: true,
         },
       },

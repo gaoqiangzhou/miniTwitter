@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema({
     type: Number,
     require: true,
   },
+  warns:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Complaint"
+    }
+  ],
 });
 
 const User = new mongoose.model("User", userSchema);
