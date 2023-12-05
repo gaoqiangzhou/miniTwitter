@@ -4,6 +4,9 @@ import { useAuth } from '../contexts/AuthContext'
 const Warns = () => {
     const {user} = useAuth();
     const warns = user?.warns;
+    if(warns.length === 0) return(
+        <></>
+    )
   return (
 
       <div className="bg-white shadow rounded-lg w-1/3">

@@ -57,7 +57,8 @@ const Profile = () => {
     }, [id])
   return (
     <div className="flex flex-row bg-gray-300 antialiased">
-            <Warns/>
+
+            {id === user._id && <Warns/>}
             <div className="bg-white shadow rounded-lg mx-auto w-1/2"> 
                 <div>
                     <h1 className="font-bold text-center text-3xl text-gray-900">{profileInfo?.name}</h1>
