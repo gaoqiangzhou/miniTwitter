@@ -14,7 +14,6 @@ const TwitterList = () => {
       b.dislikes.length -
       (a.likes.length + a.rewardLikes - a.dislikes.length)
   );
-
   // Get the top 3 posts as trendy posts
   const trendyPosts = sortedPosts.slice(0, 3);
 
