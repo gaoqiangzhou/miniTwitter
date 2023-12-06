@@ -13,7 +13,8 @@ export function PostContextProvider({children})
     const LIKAPI = (postId) =>  `http://localhost:3000/post/${postId}/like`;
     const DISLIKAPI = (postId) => `http://localhost:3000/post/${postId}/dislike`;
     const READ_API = (postId) =>  `http://localhost:3000/post/${postId}/reads`;
-    const COMPLAIN_POST = "http://localhost:3000/complain/"
+    const COMPLAIN_POST = "http://localhost:3000/complain/";
+    const [trendyPosts, setTrendyPosts] = useState([]);
     const updatePosts = (newPosts) => {
         setPosts(newPosts);
     }
@@ -194,7 +195,9 @@ export function PostContextProvider({children})
     }
     useEffect(() => {
         axios.get(postAPI)
-        .then((res) => setPosts(res.data));
+        .then((res) => {
+            setPosts(res.data)
+        });
     }, [])
     return (
         <PostContext.Provider value = {values}>

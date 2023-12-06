@@ -122,7 +122,7 @@ const TwitterBox = (props) => {
           onClick={() => {like(user._id, props.postId); read(user._id, props.postId)}}
           className={"mr-2 text-blue-500 hover:text-blue-700"}
         >
-          <FcLike /> Like <span className="badge">{props.initialLikes.length}</span>
+          <FcLike /> Like <span className="badge">{(props.initialLikes.length + props.rewardLikes) || 0}</span>
         </button>
         <button
           onClick={() => {dislike(user._id, props.postId); read(user._id, props.postId)}}

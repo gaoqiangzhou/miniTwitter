@@ -3,26 +3,11 @@ import axios from "axios";
 import TwitterBox from "./TwitterBox";
 import { usePost } from "../contexts/PostContext";
 
-const TwitterTrendyPost = () => {
-  const { posts, updatePosts } = usePost();
-  const [trendyPosts, setTrendyPosts] = useState([]);
-
-  useEffect(() => {
-    const postAPI = "http://localhost:3000/post";
-    axios.get(postAPI).then((res) => {
-      const sortedPosts = res.data.sort(
-        (a, b) =>
-          b.likes.length -
-          b.dislikes.length -
-          (a.likes.length - a.dislikes.length)
-      );
-      setTrendyPosts(sortedPosts.slice(0, 3));
-    });
-  }, []);
+const TwitterTrendyPost = (props) => {
 
   return (
     <div className="flex flex-col gap-y-1">
-      {trendyPosts?.map((post) => (
+      {props.trendyPosts?.map((post) => (
         <div
           key={post._id}
           style={{
@@ -50,6 +35,7 @@ const TwitterTrendyPost = () => {
             initcomments={post.comments}
             initReads={post.reads}
             complaints={post.complaints}
+            rewardLikes = {post.rewardLikes}
           />
         </div>
       ))}
