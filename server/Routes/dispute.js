@@ -28,7 +28,7 @@ router.post("/:complaintId", async (req, res) => {
 //get all unprocessed disputes
 router.get("/", async (req, res) => {
   try{
-    const disputes = await DisputeMessage.find({approved: null})
+    const disputes = await DisputeMessage.find({approved: "Unprocessed"})
     const newDisputes = await Promise.all(
                         disputes
                         .map(async (ea) => ({
@@ -51,6 +51,42 @@ router.get("/", async (req, res) => {
       error: error.message,
     });
   }
+})
+//process dispute
+router.put("/:disputeId", async (req, res) => {
+  const disputeId = req.params.disputeId;
+  const {approved} = req.body;
+  //if win the dispute
+  //mark dispute approved to true
+  //remove complain (user, post, or profile)
+  //punish reporter
+  //if surfer: reward user
+  try{
+    if(approved === "Yes")
+    {
+      await DisputeMessage.findOneAndUpdate({_id: disputeId}, {approved: "Yes"}, {new: true})
+      res.json({
+        status: "SUCCESS",
+        message: "disputed",
+      })
+    }else
+    {
+      await DisputeMessage.findOneAndUpdate({_id: disputeId}, {approved: "No"}, {new: true})
+      res.json({
+        status: "SUCCESS",
+        message: "disputed not approve",
+      })
+    }
+  }catch (error) {
+    res.json({
+      status: "FAILED",
+      message: "Error occurred while process a dispute",
+      error: error.message,
+    });
+  }
+
+  //if not
+
 })
 
 module.exports = router;

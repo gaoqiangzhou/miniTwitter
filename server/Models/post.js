@@ -62,6 +62,10 @@ const postSchema = new mongoose.Schema(
         },
       },
     ],
+    rewardLikes:{
+      type: Number,
+      default: 0
+    },
     dislikes: [
       {
         user: {
