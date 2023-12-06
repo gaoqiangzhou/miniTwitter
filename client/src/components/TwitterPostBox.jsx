@@ -6,8 +6,10 @@ import { usePost } from "../contexts/PostContext";
 
 const TwitterPostBox = () => {
   const [tweet, setTweet] = useState("");
-  const { user } = useAuth();
   const { posts, updatePosts } = usePost();
+  const SU = "65709c34a61468c9f359e3fe";
+  const { user, updateUser, subscribe, unSubscribe, tip } = useAuth();
+
   const postAPI = "http://localhost:3000/post";
   const userName = user?.name;
   const userId = user?._id;
@@ -38,26 +40,71 @@ const TwitterPostBox = () => {
     const filteredContent = filterResult[1];
     let tabooWordCount = filterResult[0];
 
-    if (tabooWordCount >= 3) {
-      console.log("Tweet blocked due to excessive taboo words.");
-      // Optionally show a warning to the user
-      alert(
-        "Your message contains three or more taboo words. Please review your message."
-      );
-    } else {
-      try {
-        axios
-          .post(postAPI, { content: filteredContent, userId, userName })
-          .then((res) => {
-            const data = res.data;
-            if (data.status != "SUCCESS") throw new Error("error");
-            const newPost = data.data;
-            updatePosts([newPost, ...posts]);
-            setTwitter("");
-            //parent.location.reload();
-          });
-      } catch (error) {
-        console.error("Error when posting a tweet", error);
+    const wordCount = tweet.split(/\s+/).length;
+    const isFreeTweet = wordCount <= 20;
+
+    if (isFreeTweet) {
+      // if is freetweet just continue
+      console.log("how many words:" + wordCount);
+
+      if (tabooWordCount >= 3) {
+        console.log("Tweet blocked due to excessive taboo words.");
+        // Optionally show a warning to the user
+        alert(
+          "Your message contains three or more taboo words. Please review your message."
+        );
+      } else {
+        try {
+          axios
+            .post(postAPI, { content: filteredContent, userId, userName })
+            .then((res) => {
+              const data = res.data;
+              if (data.status != "SUCCESS") throw new Error("error");
+              const newPost = data.data;
+              updatePosts([newPost, ...posts]);
+              setTweet("");
+              //parent.location.reload();
+            });
+        } catch (error) {
+          console.error("Error when posting a tweet", error);
+        }
+      }
+    } //
+    //for message > 20
+    else {
+      console.log("how many words :" + wordCount);
+      const userBalance = user.balance;
+      const messageCost = parseFloat((wordCount - 20) * 0.1);
+
+      if (userBalance < messageCost) {
+        // Insufficient funds, redirect to payment page
+        alert("Insufficient funds. Redirecting to payment page.");
+      } else {
+        // pay the bill to SU
+        tip(user._id, SU, messageCost);
+
+        if (tabooWordCount >= 3) {
+          console.log("Tweet blocked due to excessive taboo words.");
+          // Optionally show a warning to the user
+          alert(
+            "Your message contains three or more taboo words. Please review your message."
+          );
+        } else {
+          try {
+            axios
+              .post(postAPI, { content: filteredContent, userId, userName })
+              .then((res) => {
+                const data = res.data;
+                if (data.status != "SUCCESS") throw new Error("error");
+                const newPost = data.data;
+                updatePosts([newPost, ...posts]);
+                setTweet("");
+                //parent.location.reload();
+              });
+          } catch (error) {
+            console.error("Error when posting a tweet", error);
+          }
+        }
       }
     }
   };
