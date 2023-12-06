@@ -15,7 +15,8 @@ const disputeMessageSchema = new mongoose.Schema({
         required: true,
     },
     approved:{
-        type: Boolean
+        type: Boolean,
+        default: null,
     }
 })
 const DisputeMessage = new mongoose.model("DisputeMessage", disputeMessageSchema);
