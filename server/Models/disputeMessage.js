@@ -30,7 +30,7 @@ disputeMessageSchema.post("findOneAndUpdate", async (doc, next) => {
             //console.log(data)
             if(data1.complaintType === "post")
             {
-                //remove both complaint from post and user
+                //remove complaint from post and user and complaint
                 await doc   
                 .model("Complaint")
                 .findOneAndRemove({_id: doc.complain})
@@ -40,6 +40,24 @@ disputeMessageSchema.post("findOneAndUpdate", async (doc, next) => {
                 await doc
                 .model("Post")
                 .findOneAndUpdate({_id: data1.postId}, {$pull: {complaints: doc.complain}})
+                //punish reporter
+                if(data1.by === "Surfer")
+                {
+                    //reward 3 likes
+                    await doc
+                    .model("Post")
+                    .findOneAndUpdate({_id: data1.postId}, {$inc: {rewardLikes: 3}})
+                }
+                else
+                {
+                    //warn the reporter
+                    const newComplaint = await doc   
+                    .model("Complaint")
+                    .create({by: "SU", complaintType: "other", reason: "false report", to: data1.by})
+                    await doc   
+                        .model("User")
+                        .updateOne({_id: data1.by}, {$push: {warns: newComplaint._id}})
+                }
             }
         }
     }catch (error)

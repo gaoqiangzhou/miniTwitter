@@ -183,23 +183,6 @@ export function PostContextProvider({children})
              })
              .catch((err) => console.log(err));
     }
-    // const cancelComplainPost = (postId, postUserId, complainId) => {
-    //     const post = getPostById(postId);
-    //     const complaints = post?.complaints;
-    //     axios.put(COMPLAIN_POST(postId), {postUserId: postUserId, complainId: complainId})
-    //     .then((res) => {
-    //         if (res.data.status === "FAILED") throw new Error(res.data.message);
-    //         setPosts((prev) => 
-    //             prev?.map((ea) => (ea._id === postId)) ?
-    //             ({
-    //                 ...ea,
-    //                 complaints: complaints.filter((ea) => ea._id !== complainId)
-    //             }) :
-    //             (ea)
-    //         )
-    //     })
-    //     .catch((err) => console.log(err));
-    // }
     const values = {
         posts: posts,
         updatePosts: updatePosts,

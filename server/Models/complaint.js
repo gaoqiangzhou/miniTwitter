@@ -12,7 +12,7 @@ const complaintSchema = new mongoose.Schema({
         type: String,
         require: true,
         enum: {
-            values: ["post", "profile", "balance"],
+            values: ["post", "profile", "balance", "other"],
             message: "{value} not supproted",
           },
     },
