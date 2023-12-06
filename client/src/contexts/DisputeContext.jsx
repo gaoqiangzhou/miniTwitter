@@ -13,7 +13,7 @@ export function DisputeContextProvider({children}){
         axios.post(DISPUTE_API+complaintId, {userId: userId, reason: reason})
         .then((res) => {
             if(res.data.status == "FAILED") throw new Error('send dispute failed');
-            setDisputes((prev) => [...prev, res.data.dispute])
+            setDisputes([...disputes, res.data.dispute])
         }).catch(err => console.log(err))
     }
     const values = {
