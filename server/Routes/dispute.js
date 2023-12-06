@@ -10,11 +10,12 @@ router.post("/:complaintId", async (req, res) => {
     const complaintId = req.params.complaintId;
     const { userId, reason } = req.body;
     try{
+        const complaint = await Complaint.findOne({_id: complaintId})
         const dispute = await DisputeMessage.create({complain: complaintId, from: userId, disputeReason: reason});
         res.json({
             status: "SUCCESS",
             message: "Success to send the dispute",
-            dispute: dispute
+            dispute: {_id: dispute._id, from: dispute.from, disputeReason: dispute.disputeReason, complain: complaint}
         })
     } catch (error) {
     res.json({
@@ -28,10 +29,19 @@ router.post("/:complaintId", async (req, res) => {
 router.get("/", async (req, res) => {
   try{
     const disputes = await DisputeMessage.find({approved: null})
+    const newDisputes = await Promise.all(
+                        disputes
+                        .map(async (ea) => ({
+                          _id: ea._id,
+                          from: ea.from,
+                          disputeReason: ea.disputeReason,
+                          complain: await Complaint.findOne({_id: ea.complain+""})
+                        })))
+
     res.json({
       status: "SUCCESS",
       message: "get all unprocessed disputes",
-      disputes: disputes
+      disputes: newDisputes
     });
 
   } catch (error) {

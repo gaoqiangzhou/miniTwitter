@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Tab } from '@headlessui/react'
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useDispute } from "../contexts/DisputeContext";
 import TwitterBox from "../components/TwitterBox";
 import Warns from "../components/Warns";
 import Disputes from "../components/Disputes";
@@ -12,6 +13,7 @@ const Profile = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { user, updateUser } = useAuth();
+    const {disputes} = useDispute()
     const [profileInfo, setProfileInfo] = useState();
     const [posts, setPosts] = useState([]);
     const API_USER = (id) => `http://localhost:3000/user/profile/${id}`
@@ -116,7 +118,7 @@ const Profile = () => {
                     </Tab.Group>
                 </div>
             </div>
-            {id === user?._id && <Disputes/>}
+            {id === user?._id && <Disputes disputes = {disputes}/>}
     </div>
   )
 }
