@@ -6,8 +6,9 @@ const userRoute = require("./Routes/user");
 const postRoute = require("./Routes/post");
 const subscribeRoute = require("./Routes/subscribe");
 const suggestRoute = require("./Routes/suggest");
-const complainRoute = require("./Routes/complaint")
-const disputeRoute = require("./Routes/dispute")
+const complainRoute = require("./Routes/complaint");
+const disputeRoute = require("./Routes/dispute");
+const trendyRoute = require("./Routes/trendypost");
 
 app.use(cors());
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use("/subscribe", subscribeRoute);
 app.use("/suggest", suggestRoute);
 app.use("/complain", complainRoute);
 app.use("/dispute", disputeRoute);
+app.use("/trendy", trendyRoute);
 
 mongoose
   .connect(

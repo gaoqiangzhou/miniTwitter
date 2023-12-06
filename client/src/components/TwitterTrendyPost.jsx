@@ -8,13 +8,10 @@ const TwitterTrendyPost = () => {
   const [trendyPosts, setTrendyPosts] = useState([]);
 
   useEffect(() => {
-    const postAPI = "http://localhost:3000/post";
+    const postAPI = "http://localhost:3000/trendy";
     axios.get(postAPI).then((res) => {
-      const sortedPosts = res.data.sort(
-        (a, b) =>
-          b.likes.length -
-          b.dislikes.length -
-          (a.likes.length - a.dislikes.length)
+      const sortedPosts = res.data.data.sort(
+        (a, b) => b.likes.length - a.likes.length
       );
       setTrendyPosts(sortedPosts.slice(0, 3));
     });
@@ -38,7 +35,7 @@ const TwitterTrendyPost = () => {
               fontWeight: "bold",
             }}
           >
-            Trendy
+            Trendy Twitter
           </div>
           <TwitterBox
             displayName={post.userName}
