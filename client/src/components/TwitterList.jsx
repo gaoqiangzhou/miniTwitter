@@ -8,7 +8,12 @@ const TwitterList = () => {
   const { posts, updatePosts } = usePost();
   return (
     <div className="flex flex-col gap-y-1">
-      <TwitterTrendyPost />
+      <TwitterTrendyPost trendyPosts = {posts.sort(
+                (a, b) =>
+                  (b.likes.length + b.rewardLikes) -
+                  b.dislikes.length -
+                  ((a.likes.length + a.rewardLikes) - a.dislikes.length)
+              )}/>
       {posts?.map((post) => (
         <div key={post._id}>
           <TwitterBox
@@ -21,6 +26,7 @@ const TwitterList = () => {
             initcomments={post.comments}
             initReads={post.reads}
             complaints={post.complaints}
+            rewardLikes = {post.rewardLikes}
           />
         </div>
       ))}
