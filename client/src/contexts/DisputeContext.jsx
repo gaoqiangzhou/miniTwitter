@@ -16,10 +16,18 @@ export function DisputeContextProvider({children}){
             setDisputes([...disputes, res.data.dispute])
         }).catch(err => console.log(err))
     }
+    const processDispute = (disputeId, decision) => {
+        axios.put(DISPUTE_API+disputeId, {approved: decision})
+            .then((res) => {
+                if(res.data.status == "FAILED") throw new Error('process dispute failed');
+                setDisputes(disputes.filter((ea) => ea._id === disputeId))
+            }).catch(err => console.log(err))
+    }
     const values = {
         disputes: disputes,
         setDisputes: setDisputes,
-        sendDispute: sendDispute
+        sendDispute: sendDispute,
+        processDispute: processDispute
     }
     //keep login 
     useEffect(() => {

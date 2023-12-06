@@ -24,11 +24,11 @@ disputeMessageSchema.post("findOneAndUpdate", async (doc, next) => {
         if(doc.approved === "Yes")
         {
             //get complaint type
-            let data = await doc   
+            let data1 = await doc   
             .model("Complaint")
-            .findOne({_id: doc.complain})
-            console.log(data)
-            if(data.complaintType === "post")
+            .findOne({_id: await doc.complain})
+            //console.log(data)
+            if(data1.complaintType === "post")
             {
                 //remove both complaint from post and user
                 await doc   
@@ -37,6 +37,9 @@ disputeMessageSchema.post("findOneAndUpdate", async (doc, next) => {
                 await doc
                 .model("User")
                 .findOneAndUpdate({_id: doc.from}, {$pull: {warns: doc.complain}})
+                await doc
+                .model("Post")
+                .findOneAndUpdate({_id: data1.postId}, {$pull: {complaints: doc.complain}})
             }
         }
     }catch (error)

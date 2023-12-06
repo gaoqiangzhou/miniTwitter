@@ -64,14 +64,14 @@ router.put("/:disputeId", async (req, res) => {
   try{
     if(approved === "Yes")
     {
-      await DisputeMessage.findOneAndUpdate({_id: disputeId}, {approved: "Yes"})
+      await DisputeMessage.findOneAndUpdate({_id: disputeId}, {approved: "Yes"}, {new: true})
       res.json({
         status: "SUCCESS",
         message: "disputed",
       })
     }else
     {
-      await DisputeMessage.findOneAndUpdate({_id: disputeId}, {approved: "No"})
+      await DisputeMessage.findOneAndUpdate({_id: disputeId}, {approved: "No"}, {new: true})
       res.json({
         status: "SUCCESS",
         message: "disputed not approve",
