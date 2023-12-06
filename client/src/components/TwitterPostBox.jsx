@@ -7,52 +7,55 @@ import { usePost } from "../contexts/PostContext";
 const TwitterPostBox = () => {
   const [tweet, setTweet] = useState("");
   const { user } = useAuth();
-  const {posts, updatePosts} = usePost();
+  const { posts, updatePosts } = usePost();
   const postAPI = "http://localhost:3000/post";
   const userName = user?.name;
   const userId = user?._id;
-  const tabooWordList = ["fuck", "asshole","damn"]; // Replace with your actual taboo words
-
+  const tabooWordList = ["fuck", "asshole", "damn"]; // Replace with your actual taboo words
 
   const filterTweet = (tweet) => {
     let filteredTweet = tweet;
     let filterCount = 0;
     tabooWordList.forEach((word) => {
-      const regex = new RegExp(`\\b${word}\\b|${word}`, 'gi');
-      if(regex.exec(filteredTweet)){
-        filterCount +=1;
+      const regex = new RegExp(`\\b${word}\\b|${word}`, "gi");
+      if (regex.exec(filteredTweet)) {
+        filterCount += 1;
       }
-      filteredTweet = filteredTweet.replace(regex, (match) => '*'.repeat(match.length));
+      filteredTweet = filteredTweet.replace(regex, (match) =>
+        "*".repeat(match.length)
+      );
     });
-    return [filterCount,filteredTweet];
+    return [filterCount, filteredTweet];
   };
 
   const handleTweetChange = (e) => {
     setTweet(e.target.value);
   };
 
-  const handleSubmitTweet =  (e) => {
+  const handleSubmitTweet = (e) => {
     e.preventDefault();
     const filterResult = filterTweet(tweet);
     const filteredContent = filterResult[1];
     let tabooWordCount = filterResult[0];
 
-
     if (tabooWordCount >= 3) {
       console.log("Tweet blocked due to excessive taboo words.");
       // Optionally show a warning to the user
-      alert("Your message contains three or more taboo words. Please review your message.");
+      alert(
+        "Your message contains three or more taboo words. Please review your message."
+      );
     } else {
       try {
-        axios.post(postAPI, { content: filteredContent, userId, userName })
-        .then((res)=>{
-          const data = res.data;
-          if(data.status != "SUCCESS") throw new Error('error');
-          const newPost = data.data;
-          updatePosts([newPost, ...posts]);
-          //parent.location.reload();
-        })
-  
+        axios
+          .post(postAPI, { content: filteredContent, userId, userName })
+          .then((res) => {
+            const data = res.data;
+            if (data.status != "SUCCESS") throw new Error("error");
+            const newPost = data.data;
+            updatePosts([newPost, ...posts]);
+            setTwitter("");
+            //parent.location.reload();
+          });
       } catch (error) {
         console.error("Error when posting a tweet", error);
       }
