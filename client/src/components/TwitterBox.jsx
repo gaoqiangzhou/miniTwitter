@@ -74,7 +74,7 @@ const TwitterBox = (props) => {
     const parsedTipAmount = parseFloat(newTip);
 
     tip(user._id, props.userId, parsedTipAmount);
-    setNewTip(0);
+    setNewTip();
     setshowtips(false);
     //parent.location.reload(); // refresh the page
   };
