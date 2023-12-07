@@ -4,7 +4,7 @@ import { CiRead, CiWarning } from "react-icons/ci";
 import { FcLike, FcDislike } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { usePost} from "../contexts/PostContext"
+import { usePost } from "../contexts/PostContext";
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import AddComplain from "./AddComplain";
 import axios from "axios";
@@ -17,14 +17,14 @@ const TwitterBox = (props) => {
   const [showTips, setshowtips] = useState(false);
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
-  const [newTip, setNewTip] = useState(0);
+  const [newTip, setNewTip] = useState();
   const { user, updateUser, subscribe, unSubscribe, tip } = useAuth();
-  const { like, dislike, read} = usePost();
+  const { like, dislike, read } = usePost();
   const userId = user?._id;
   const [comments, setcomments] = useState(props.initcomments || []);
 
   const handleCommentChange = (e) => {
-    read(user._id, props.postId)
+    read(user._id, props.postId);
     setNewComment(e.target.value);
   };
 
@@ -68,13 +68,14 @@ const TwitterBox = (props) => {
   };
 
   const handleTipSubmit = (e) => {
-    read(user._id, props.postId)
+    read(user._id, props.postId);
     e.preventDefault();
     //update the comment to DB
     const parsedTipAmount = parseFloat(newTip);
 
-    tip(user._id, props.userId, parsedTipAmount)
-    setNewTip(0);
+    tip(user._id, props.userId, parsedTipAmount);
+    setNewTip();
+    setshowtips(false);
     //parent.location.reload(); // refresh the page
   };
   return (
@@ -89,7 +90,9 @@ const TwitterBox = (props) => {
         </span>
         {!user ? (
           <button
-            onClick={() => {subscribe(props.userId, props.displayName, user._id)}}
+            onClick={() => {
+              subscribe(props.userId, props.displayName, user._id);
+            }}
             className="mr-2 text-blue-500 hover:text-blue-700"
           >
             <SlUserFollow />
@@ -101,14 +104,18 @@ const TwitterBox = (props) => {
             false
           ) ? (
             <button
-              onClick={() => {unSubscribe(props.userId, user._id)}}
+              onClick={() => {
+                unSubscribe(props.userId, user._id);
+              }}
               className="mr-2 text-blue-500 hover:text-blue-700"
             >
               <SlUserFollowing />
             </button>
           ) : (
             <button
-              onClick={() => {subscribe(props.userId, props.displayName, user._id)}}
+              onClick={() => {
+                subscribe(props.userId, props.displayName, user._id);
+              }}
               className="mr-2 text-blue-500 hover:text-blue-700"
             >
               <SlUserFollow />
@@ -119,19 +126,32 @@ const TwitterBox = (props) => {
       <div className="mt-2">{props.content}</div>
       <div className="mt-4 flex">
         <button
-          onClick={() => {like(user._id, props.postId); read(user._id, props.postId)}}
+          onClick={() => {
+            like(user._id, props.postId);
+            read(user._id, props.postId);
+          }}
           className={"mr-2 text-blue-500 hover:text-blue-700"}
         >
-          <FcLike /> Like <span className="badge">{(props.initialLikes.length + props.rewardLikes) || 0}</span>
+          <FcLike /> Like{" "}
+          <span className="badge">
+            {props.initialLikes.length + props.rewardLikes || 0}
+          </span>
         </button>
         <button
-          onClick={() => {dislike(user._id, props.postId); read(user._id, props.postId)}}
+          onClick={() => {
+            dislike(user._id, props.postId);
+            read(user._id, props.postId);
+          }}
           className={"mr-2 text-blue-500 hover:text-blue-700"}
         >
-          <FcDislike /> Dislike <span className="badge">{props.initialDislikes.length}</span>
+          <FcDislike /> Dislike{" "}
+          <span className="badge">{props.initialDislikes.length}</span>
         </button>
         <button
-          onClick={() => {setShowComments(!showComments); read(user._id, props.postId);}}
+          onClick={() => {
+            setShowComments(!showComments);
+            read(user._id, props.postId);
+          }}
           className="mr-2 text-blue-500 hover:text-blue-700 "
         >
           <FaCommentAlt /> Comment({comments.length})
@@ -174,7 +194,7 @@ const TwitterBox = (props) => {
                 step="any"
                 value={newTip}
                 onChange={handletipsChange}
-                placeholder="Add a amount"
+                placeholder="Add a amount $00.0"
                 className="border border-gray-300"
               />
               <button type="submit">send</button>
@@ -182,14 +202,20 @@ const TwitterBox = (props) => {
           </div>
         )}
         <div className="mr-2 text-blue-500 hover:text-blue-700 ">
-          <CiRead  /> Reads({props.initReads?.length})
+          <CiRead /> Reads({props.initReads?.length})
         </div>
-        <div className="mr-2 text-blue-500 hover:text-blue-700 " onClick = {() => setShowAddComplaint((prev) => !prev)}>
-          <CiWarning  /> complaints({props.complaints?.length})
+        <div
+          className="mr-2 text-blue-500 hover:text-blue-700 "
+          onClick={() => setShowAddComplaint((prev) => !prev)}
+        >
+          <CiWarning /> complaints({props.complaints?.length})
         </div>
-        {
-          showAddComplaint && <AddComplain postId = {props.postId} setShowAddComplaint = {setShowAddComplaint}/>
-        }
+        {showAddComplaint && (
+          <AddComplain
+            postId={props.postId}
+            setShowAddComplaint={setShowAddComplaint}
+          />
+        )}
       </div>
     </div>
   );
