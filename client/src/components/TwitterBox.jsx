@@ -17,7 +17,7 @@ const TwitterBox = (props) => {
   const [showTips, setshowtips] = useState(false);
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
-  const [newTip, setNewTip] = useState(0);
+  const [newTip, setNewTip] = useState();
   const { user, updateUser, subscribe, unSubscribe, tip } = useAuth();
   const { like, dislike, read } = usePost();
   const userId = user?._id;
@@ -194,7 +194,7 @@ const TwitterBox = (props) => {
                 step="any"
                 value={newTip}
                 onChange={handletipsChange}
-                placeholder="Add a amount"
+                placeholder="Add a amount $00.0"
                 className="border border-gray-300"
               />
               <button type="submit">send</button>
